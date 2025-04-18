@@ -9,7 +9,8 @@ export const gameRouter = router({
       blackId: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
-      return await ctx.prisma.game.create({
+      const resolvedCtx = await ctx;
+      return await resolvedCtx.prisma.game.create({
         data: {
           whiteId: input.whiteId,
           blackId: input.blackId,

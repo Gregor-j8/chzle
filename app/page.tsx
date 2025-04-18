@@ -1,19 +1,10 @@
 
-// import { ClerkProvider } from "@clerk/nextjs";
-import { trpc, trpcClient } from "../utils/trpc";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { AppProps } from "next/app";
-
-
-const client = new QueryClient();
-
-function HomePage({ Component, pageProps }: AppProps) {
+function HomePage() {
   return (
-    <trpc.Provider client={trpcClient} queryClient={client}>
-      <QueryClientProvider client={client}>
-        <Component {...pageProps} />
-      </QueryClientProvider>
-    </trpc.Provider>
+    <div>
+      <h1>Welcome to My Next.js App!</h1>
+      <p>This is a simple example of a Next.js application.</p>
+    </div>
   );
 }
 

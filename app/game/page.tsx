@@ -3,15 +3,16 @@ import { Chessboard } from "react-chessboard";
 import { useState } from "react";
 import { Chess } from "chess.js";
 
+// Set up Clerk authentication
 function GamePage() {
   const [game, setGame] = useState(() => new Chess());
 
   const onDrop = (source: string, target: string) => {
-    const gameCopy = new Chess(game.fen()); // 🧠 clone current state
+    const gameCopy = new Chess(game.fen()); 
     const move = gameCopy.move({ from: source, to: target, promotion: "q" });
 
     if (move) {
-      setGame(gameCopy); // ✅ new instance, triggers re-render
+      setGame(gameCopy);
       return true;
     }
 
