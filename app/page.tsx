@@ -2,7 +2,6 @@
 import { trpc } from "@/utils/trpc";
 import { useUser } from "@clerk/nextjs";
 
-
 function HomePage() {  
   const { user } = useUser();
   if (!user) {

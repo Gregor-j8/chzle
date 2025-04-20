@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { router, publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
-import { clerkClient } from '@clerk/nextjs/server'
+import { clerkClient,  } from '@clerk/nextjs/server'
 
 export const ProfileRouter = router({
   getUserByUsername: publicProcedure
