@@ -10,4 +10,4 @@ export const createContext = async() => {
   };
 };
 
-export type Context = ReturnType<typeof createContext>;
+export type Context = Awaited<ReturnType<typeof createContext>>;

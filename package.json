@@ -9,7 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@clerk/nextjs": "^6.15.1",
+    "@clerk/backend": "^1.29.1",
+    "@clerk/clerk-sdk-node": "^5.1.6",
+    "@clerk/nextjs": "^6.16.0",
     "@prisma/client": "^6.6.0",
     "@tanstack/react-query": "^5.74.4",
     "@trpc/client": "^11.1.0",

@@ -3,13 +3,13 @@ import { Chessboard } from "react-chessboard";
 import { useState } from "react";
 import { Chess } from "chess.js";
 
-// Set up Clerk authentication
 function GamePage() {
   const [game, setGame] = useState(() => new Chess());
 
   const onDrop = (source: string, target: string) => {
     const gameCopy = new Chess(game.fen()); 
     const move = gameCopy.move({ from: source, to: target, promotion: "q" });
+    console.log(gameCopy.history())
 
     if (move) {
       setGame(gameCopy);
@@ -21,7 +21,15 @@ function GamePage() {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <Chessboard position={game.fen()} onPieceDrop={onDrop} />
+
+        {/* <div 
+        style={{
+          transform: `scale(${zoom})`,
+          transformOrigin: "top left",
+          width: "fit-content",
+        }}> */}
+            <Chessboard arePremovesAllowed={true} position={game.fen()} onPieceDrop={onDrop} />
+        {/* </div> */}
     </div>
   );
 }

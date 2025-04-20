@@ -1,5 +1,21 @@
+'use client';
+import { trpc } from "@/utils/trpc";
+import { useUser } from "@clerk/nextjs";
 
-function HomePage() {
+
+function HomePage() {  
+  const { user } = useUser();
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+  if (!user.username) {
+    return <div>Username not found</div>;
+  }
+  const username: string = user.username
+  console.log("username", username);
+  const { data, isLoading, error } = trpc.profile.getUserByUsername.useQuery({ username })
+
+  console.log("data", data);
   return (
     <div>
       <h1>Welcome to My Next.js App!</h1>
