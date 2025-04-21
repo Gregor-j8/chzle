@@ -5,6 +5,7 @@ import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserBut
 import { trpc, trpcClient } from '../utils/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
+import NavBar from './_components/navbar';
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -14,6 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <ClerkProvider>
           <header className="flex justify-end items-center p-4 gap-4 h-16 border-b">
+            <NavBar />
             <SignedOut>
               <SignInButton />
               <SignUpButton />

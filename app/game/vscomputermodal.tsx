@@ -19,7 +19,7 @@ export default function VsComputerModal({ isOpen, onClose }: { isOpen: boolean; 
             className="inline-block px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium     cursor-pointer"
              /> White
             <input type="radio" name="color" value="black" 
-            className="inline-block px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium    cursor-pointer"
+            className="inline-block px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium cursor-pointer"
             /> Black
         </label>
         <div className="mt-4 flex justify-end">
