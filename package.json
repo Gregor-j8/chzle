@@ -19,6 +19,7 @@
     "@trpc/react-query": "^11.1.0",
     "@trpc/server": "^11.1.0",
     "chess.js": "^1.0.0",
+    "js-chess-engine": "^1.0.2",
     "next": "15.3.0",
     "prisma": "^6.6.0",
     "react": "^19.0.0",
