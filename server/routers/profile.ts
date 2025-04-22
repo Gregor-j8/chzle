@@ -1,20 +1,21 @@
 import { z } from 'zod'
 import { router, publicProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
-import { clerkClient,  } from '@clerk/nextjs/server'
+import { clerkClient } from '@clerk/nextjs/server'
 
 export const ProfileRouter = router({
   getUserByUsername: publicProcedure
     .input(z.object({ username: z.string() }))
     .query(async ({ input }) => {
-      console.log('Username input:', input.username);
-      const users = clerkClient.users.getUserList({
+      const clerk = await clerkClient();
+      const users = await clerk.users.getUserList({
         username: [input.username],
       })
-      console.log("📦 Users returned by Clerk:", users);
-            const user = users[0];
 
-      if (!users) {
+      const user = users.data[0];
+        console.log("📦 User :", user);
+
+      if (!user) {
         throw new TRPCError({
           code: 'NOT_FOUND',
           message: 'User not found',
@@ -22,12 +23,12 @@ export const ProfileRouter = router({
       }
 
       return {
-        id: users.id,
-        username: users.username,
-        email: users.emailAddresses[0]?.emailAddress,
-        firstName: users.firstName,
-        lastName: users.lastName,
-        imageUrl: users.imageUrl,
+        id: user.id,
+        username: user.username,
+        email: user.emailAddresses[0]?.emailAddress,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        imageUrl: user.imageUrl,
       }
     }),
 })
