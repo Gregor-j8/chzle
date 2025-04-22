@@ -1,10 +1,11 @@
 "use client";
 import { Chessboard } from "react-chessboard";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Chess } from "chess.js";
 import { Game } from "js-chess-engine";
 import { trpc } from "@/utils/trpc";
 import { useUser } from "@clerk/nextjs";
+import VsComputerModal from "../game/vscomputermodal";
 
 function GamePage() {
   const user = useUser();
@@ -13,6 +14,7 @@ function GamePage() {
   const [isThinking, setIsThinking] = useState(false);
   const [gameStatus, setGameStatus] = useState("Your turn (White)");
   const [result, setResult] = useState("");
+  const [aiLevel, setAiLevel] = useState(0);
 
   const makeAIMove = (currentGame) => {
     if (currentGame.isGameOver() || isThinking) return;
@@ -21,10 +23,10 @@ function GamePage() {
     setGameStatus("Computer is thinking...");
 
     setTimeout(() => {
-      try {
+      
         const engineGame = new Game(currentGame.fen());
         
-        const aiMove = engineGame.aiMove(2);
+        const aiMove = engineGame.aiMove(aiLevel);
         
         const from = Object.keys(aiMove)[0].toLowerCase();
         const to = aiMove[Object.keys(aiMove)[0]].toLowerCase();
@@ -38,12 +40,7 @@ function GamePage() {
         
         setGame(gameCopy);
         updateGameStatus(gameCopy);
-      } catch (error) {
-        console.error("Error making AI move:", error);
-        setGameStatus("Error making AI move. Try again.");
-      }
-      
-      setIsThinking(false);
+        setIsThinking(false);
     }, 500);
   };
 
@@ -102,9 +99,15 @@ function GamePage() {
       updateGameStatus(gameCopy);
     }
   };
-
   return (
-    <div className="flex flex-col justify-center items-center py-8 bg-slate-100 overscroll-none">
+    !aiLevel ? ( 
+      <VsComputerModal
+        isOpen={true}
+        setAiLevel={setAiLevel}
+        onClose={() => {}}
+      />
+    ) : (
+      <div className="flex flex-col justify-center items-center py-8 bg-slate-100 overscroll-none">
       <h1 className="text-xl font-bold mb-2">Chess Game vs Computer</h1>
       <div className="mb-2 text-lg">{gameStatus}</div>
       
@@ -120,11 +123,10 @@ function GamePage() {
           onClick={resetGame}>New Game
         </button>
         <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 rounded cursor-pointer" onClick={undoMoves}
-          disabled={game.history().length < 2}>Undo Move
+          >Undo Move
         </button>
       </div>
     </div>
-  );
-}
+    ))};
 
 export default GamePage;

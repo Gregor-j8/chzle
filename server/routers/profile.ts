@@ -13,8 +13,6 @@ export const ProfileRouter = router({
       })
 
       const user = users.data[0];
-        console.log("📦 User :", user);
-
       if (!user) {
         throw new TRPCError({
           code: 'NOT_FOUND',
