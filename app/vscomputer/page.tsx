@@ -1,6 +1,6 @@
 "use client";
 import { Chessboard } from "react-chessboard";
-import { use, useState } from "react";
+import { useState } from "react";
 import { Chess } from "chess.js";
 import { Game } from "js-chess-engine";
 import { trpc } from "@/utils/trpc";
