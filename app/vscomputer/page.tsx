@@ -1,13 +1,18 @@
 "use client";
 import { Chessboard } from "react-chessboard";
-import { useState,  } from "react";
+import { use, useState } from "react";
 import { Chess } from "chess.js";
 import { Game } from "js-chess-engine";
+import { trpc } from "@/utils/trpc";
+import { useUser } from "@clerk/nextjs";
 
 function GamePage() {
+  const user = useUser();
+  const createGame = trpc.game.createGame.useMutation();
   const [game, setGame] = useState(() => new Chess());
   const [isThinking, setIsThinking] = useState(false);
   const [gameStatus, setGameStatus] = useState("Your turn (White)");
+  const [result, setResult] = useState("");
 
   const makeAIMove = (currentGame) => {
     if (currentGame.isGameOver() || isThinking) return;
@@ -44,14 +49,26 @@ function GamePage() {
 
   const updateGameStatus = (currentGame) => {
     if (currentGame.isCheckmate()) {
+      setResult(currentGame.turn() === 'w' ? '0-1' : '1-0');
       setGameStatus(`Checkmate! ${currentGame.turn() === 'w' ? 'Black' : 'White'} wins!`);
     } else if (currentGame.isDraw()) {
       setGameStatus("Game Over - Draw!");
+      setResult("1/2-1/2");
     } else if (currentGame.isCheck()) {
       setGameStatus(`Check! ${currentGame.turn() === 'w' ? 'White' : 'Black'} to move.`);
     } else {
       setGameStatus(currentGame.turn() === 'w' ? 'Your turn (White)' : 'Computer\'s turn (Black)');
     }
+    if (!user.user) return;
+    if (currentGame.isCheckmate() || currentGame.isDraw()) {
+        createGame.mutate({
+          whiteId: user.user.id,
+          blackId: "computer",
+          pgn: currentGame.pgn(),
+          result: result,
+        });
+    };
+   
   };
 
   const onDrop = (source: string, target: string) => {

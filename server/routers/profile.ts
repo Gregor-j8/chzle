@@ -8,7 +8,7 @@ export const ProfileRouter = router({
     .input(z.object({ username: z.string() }))
     .query(async ({ input }) => {
       console.log('Username input:', input.username);
-      const users = await clerkClient.users.getUserList({
+      const users = clerkClient.users.getUserList({
         username: [input.username],
       })
       console.log("📦 Users returned by Clerk:", users);

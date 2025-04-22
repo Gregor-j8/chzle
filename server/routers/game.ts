@@ -1,21 +1,21 @@
-// server/routers/game.ts
 import { z } from "zod";
-import { router, publicProcedure, protectedProcedure } from "../trpc";
+import { router, protectedProcedure, publicProcedure } from "../trpc";
 
 export const gameRouter = router({
   createGame: protectedProcedure
     .input(z.object({
       whiteId: z.string(),
       blackId: z.string(),
+      pgn: z.string(),
+      result: z.string()
     }))
     .mutation(async ({ input, ctx }) => {
-      return await ctx.prisma.game.create({
-        data: {
-          whiteId: input.whiteId,
-          blackId: input.blackId,
-          moves: '',
-          result: '',
-        },
+      console.log('Create game input:', input);
+      console.log('ctx.prisma:', !!ctx.prisma);
+      const { whiteId, blackId, pgn, result } = input;
+      const game = await ctx.prisma.game.create({
+          data: { whiteId, blackId, pgn, result },
       });
+      return game
     }),
 });

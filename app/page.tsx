@@ -17,7 +17,7 @@ function HomePage() {
   console.log("data", data);
   return (
     <div>
-      <h1>Welcome to My Next.js App!</h1>
+      <h1>Welcome {user.fullName}</h1>
       <p>This is a simple example of a Next.js application.</p>
     </div>
   );
