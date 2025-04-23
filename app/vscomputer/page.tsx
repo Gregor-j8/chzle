@@ -1,11 +1,15 @@
 "use client";
 import { Chessboard } from "react-chessboard";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Chess } from "chess.js";
 import { Game } from "js-chess-engine";
 import { trpc } from "@/utils/trpc";
 import { useUser } from "@clerk/nextjs";
 import VsComputerModal from "../game/vscomputermodal";
+
+interface AIMove {
+  [key: string]: string;
+}
 
 function GamePage() {
   const user = useUser();
@@ -14,37 +18,40 @@ function GamePage() {
   const [isThinking, setIsThinking] = useState(false);
   const [gameStatus, setGameStatus] = useState("Your turn (White)");
   const [result, setResult] = useState("");
+  const [whiteGameHistory, setwhiteGameHistory] = useState<string[]>([]);
+  const [blackGameHistory, setBlackGameHistory] = useState<string[]>([]);
+
   const [aiLevel, setAiLevel] = useState(0);
 
-  const makeAIMove = (currentGame) => {
+  const makeAIMove = (currentGame: Chess): void => {
     if (currentGame.isGameOver() || isThinking) return;
 
     setIsThinking(true);
     setGameStatus("Computer is thinking...");
 
     setTimeout(() => {
-      
         const engineGame = new Game(currentGame.fen());
         
-        const aiMove = engineGame.aiMove(aiLevel);
-        
-        const from = Object.keys(aiMove)[0].toLowerCase();
-        const to = aiMove[Object.keys(aiMove)[0]].toLowerCase();
+        const aiMove: AIMove = engineGame.aiMove(aiLevel);
+        const from: string = Object.keys(aiMove)[0].toLowerCase();
+        const to: string = aiMove[Object.keys(aiMove)[0]].toLowerCase();
         
         const gameCopy = new Chess(currentGame.fen());
-        gameCopy.move({
+        const game = gameCopy.move({
           from: from,
           to: to,
           promotion: "q" 
         });
-        
+        if (gameCopy) {
+        const newHistory = [...blackGameHistory, game.san];
+        setBlackGameHistory(newHistory);
         setGame(gameCopy);
         updateGameStatus(gameCopy);
         setIsThinking(false);
-    }, 500);
+    }}, 500);
   };
 
-  const updateGameStatus = (currentGame) => {
+  const updateGameStatus = (currentGame: Chess) => {
     if (currentGame.isCheckmate()) {
       setResult(currentGame.turn() === 'w' ? '0-1' : '1-0');
       setGameStatus(`Checkmate! ${currentGame.turn() === 'w' ? 'Black' : 'White'} wins!`);
@@ -58,30 +65,35 @@ function GamePage() {
     }
     if (!user.user) return;
     if (currentGame.isCheckmate() || currentGame.isDraw()) {
+      // Save the final move to the database
+      const gameMoves = whiteGameHistory.map((val, i) => `${i + 1}. ${val} ${blackGameHistory[i]},`).join(" ");
+      const gamePng = gameMoves
+      console.log(gamePng);
+      if (gamePng) {
         createGame.mutate({
           whiteId: user.user.id,
           blackId: "computer",
-          pgn: currentGame.pgn(),
+          pgn: gamePng,
           result: result,
         });
-    };
-   
+    };  
   };
+}
 
   const onDrop = (source: string, target: string) => {
     const gameCopy = new Chess(game.fen()); 
     const move = gameCopy.move({ from: source, to: target, promotion: "q" });
-
     if (move) {
+      const newHistory = [...whiteGameHistory, move.san];
+      setwhiteGameHistory(newHistory);
       setGame(gameCopy);
       updateGameStatus(gameCopy);
-      
+        
       if (!gameCopy.isGameOver()) {
         setTimeout(() => makeAIMove(gameCopy), 300);
       }
       return true;
     }
-
     return false;
   };
 
@@ -99,15 +111,14 @@ function GamePage() {
       updateGameStatus(gameCopy);
     }
   };
+
   return (
     !aiLevel ? ( 
       <VsComputerModal
-        isOpen={true}
         setAiLevel={setAiLevel}
-        onClose={() => {}}
       />
     ) : (
-      <div className="flex flex-col justify-center items-center py-8 bg-slate-100 overscroll-none">
+      <div className="flex flex-col justify-center items-center py-8 bg-slate-100">
       <h1 className="text-xl font-bold mb-2">Chess Game vs Computer</h1>
       <div className="mb-2 text-lg">{gameStatus}</div>
       

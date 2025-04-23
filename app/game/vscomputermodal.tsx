@@ -1,13 +1,14 @@
+
 import Link from "next/link";
 
-export default function VsComputerModal({ isOpen, onClose, setAiLevel }: { isOpen: boolean; setAiLevel: (level: number) => void; onClose: () => void }) {
+export default function VsComputerModal({ setAiLevel }: { setAiLevel: (level: number) => void;  }) {
   return (
-    <div className={`fixed inset-0 flex items-center justify-center ${isOpen ? 'block' : 'hidden'}`}>
-      <div className="fixed inset-0 bg-black opacity-50" onClick={onClose}></div>
+    <div className="fixed inset-0 flex items-center justify-center">
+      <div className="fixed inset-0 bg-black opacity-50"></div>
       <div className="bg-white rounded-lg shadow-lg p-6 z-50">
         <h2 className="text-xl font-bold mb-4">Vs Computer</h2>
-        <p>Choose difficulty</p>
-        <select onChange={(e) => setAiLevel(Number(e.target.value))} className="mt-2 mb-4 border border-gray-300 rounded p-2 w-full">
+        <p>Choose difficulty to start</p>
+        <select onChange={(e) => {setAiLevel(Number(e.target.value))}} className="mt-2 mb-4 border border-gray-300 rounded p-2 w-full">
             <option value="0">Choose difficulty</option>
             <option value="1">Easy</option>
             <option value="2">Medium</option>
@@ -23,8 +24,7 @@ export default function VsComputerModal({ isOpen, onClose, setAiLevel }: { isOpe
             /> Black
         </label>
         <div className="mt-4 flex justify-end">
-          <button onClick={onClose} className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"><Link href={"/"}>Close</Link></button>
-          <button onClick={onClose} className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Start game</button>
+          <button className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"><Link href={"/"}>Close</Link></button>
         </div>
       </div>
     </div>

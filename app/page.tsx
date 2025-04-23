@@ -1,21 +1,26 @@
 'use client';
 import { trpc } from "@/utils/trpc";
 import { useUser } from "@clerk/nextjs";
+import { LoadingSpinner } from "./_components/loading";
 
 function HomePage() {  
   const { user } = useUser();
-  if (!user) {
-    return <div>Loading...</div>;
+  
+  const username: string = user?.username ?? "";
+  const { data, isLoading } = trpc.profile.getUserByUsername.useQuery({ username }, {
+    enabled: !!user?.username,
+  })
+
+  if (isLoading) {
+    return <div><LoadingSpinner/></div>;
   }
-  if (!user.username) {
-    return <div>Username not found</div>;
+  if (!data) {
+    return <div></div>;
   }
-  const username: string = user.username
-  const { data, isLoading, error } = trpc.profile.getUserByUsername.useQuery({ username })
 
   return (
     <div>
-      <h1>Welcome {user.fullName}</h1>
+      <h1>Welcome {data?.firstName} {data?.lastName}</h1>
       <p>This is a simple example of a Next.js application.</p>
     </div>
   );

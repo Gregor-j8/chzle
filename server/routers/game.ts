@@ -10,6 +10,7 @@ export const gameRouter = router({
       result: z.string()
     }))
     .mutation(async ({ input, ctx }) => {
+      console.log(input)
       const { whiteId, blackId, pgn, result } = input;
       const game = await ctx.prisma.game.create({
           data: { whiteId, blackId, pgn, result },
