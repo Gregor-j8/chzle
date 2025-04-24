@@ -56,8 +56,15 @@ model userPuzzle {
 }
 
 model Puzzle {
-  id String @id @default(cuid())
-  puzzle String
+  id String @id
+  fen String
+  moves String[]
   puzzlerating Int
+  ratingdeviation Int
+  Population Int
+  numberplayed Int
+  theme String
+  GameUrl String
+  openingTags String? 
   userPuzzles  userPuzzle[]
 }

@@ -14,7 +14,6 @@ interface AIMove {
 
 function GamePage() {
   const user = useUser();
-  console.log(user);
   const createGame = trpc.game.createGame.useMutation();
   const [game, setGame] = useState(() => new Chess());
   const [isThinking, setIsThinking] = useState(false);
