@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "react-hot-toast";
 import { Chessboard } from "react-chessboard";
 import { useState } from "react";
 import { Chess } from "chess.js";
@@ -13,6 +14,7 @@ interface AIMove {
 
 function GamePage() {
   const user = useUser();
+  console.log(user);
   const createGame = trpc.game.createGame.useMutation();
   const [game, setGame] = useState(() => new Chess());
   const [isThinking, setIsThinking] = useState(false);
@@ -20,7 +22,6 @@ function GamePage() {
   const [result, setResult] = useState("");
   const [whiteGameHistory, setwhiteGameHistory] = useState<string[]>([]);
   const [blackGameHistory, setBlackGameHistory] = useState<string[]>([]);
-
   const [aiLevel, setAiLevel] = useState(0);
 
   const makeAIMove = (currentGame: Chess): void => {
@@ -37,11 +38,7 @@ function GamePage() {
         const to: string = aiMove[Object.keys(aiMove)[0]].toLowerCase();
         
         const gameCopy = new Chess(currentGame.fen());
-        const game = gameCopy.move({
-          from: from,
-          to: to,
-          promotion: "q" 
-        });
+        const game = gameCopy.move({from: from, to: to});
         if (gameCopy) {
         const newHistory = [...blackGameHistory, game.san];
         setBlackGameHistory(newHistory);
@@ -49,6 +46,26 @@ function GamePage() {
         updateGameStatus(gameCopy);
         setIsThinking(false);
     }}, 500);
+  };
+
+  const onDrop = (source: string, target: string) => {
+    const gameCopy = new Chess(game.fen()); 
+    const move = gameCopy.move({ from: source, to: target});
+
+      if (move == null) {
+        toast.error("Invalid move! Please try again.");
+        return move;
+      }
+
+      const newHistory = [...whiteGameHistory, move.san];
+      setwhiteGameHistory(newHistory);
+      setGame(gameCopy);
+      updateGameStatus(gameCopy);
+        
+      if (!gameCopy.isGameOver()) {
+        setTimeout(() => makeAIMove(gameCopy), 300);
+      }
+      return move;
   };
 
   const updateGameStatus = (currentGame: Chess) => {
@@ -68,7 +85,7 @@ function GamePage() {
       // Save the final move to the database
       const gameMoves = whiteGameHistory.map((val, i) => `${i + 1}. ${val} ${blackGameHistory[i]},`).join(" ");
       const gamePng = gameMoves
-      console.log(gamePng);
+
       if (gamePng) {
         createGame.mutate({
           whiteId: user.user.id,
@@ -79,23 +96,6 @@ function GamePage() {
     };  
   };
 }
-
-  const onDrop = (source: string, target: string) => {
-    const gameCopy = new Chess(game.fen()); 
-    const move = gameCopy.move({ from: source, to: target, promotion: "q" });
-    if (move) {
-      const newHistory = [...whiteGameHistory, move.san];
-      setwhiteGameHistory(newHistory);
-      setGame(gameCopy);
-      updateGameStatus(gameCopy);
-        
-      if (!gameCopy.isGameOver()) {
-        setTimeout(() => makeAIMove(gameCopy), 300);
-      }
-      return true;
-    }
-    return false;
-  };
 
   const resetGame = () => {
     setGame(new Chess());
@@ -123,7 +123,7 @@ function GamePage() {
       <div className="mb-2 text-lg">{gameStatus}</div>
       
       <div className="shadow-lg rounded-md overflow-hidden">
-        <Chessboard  arePremovesAllowed={true} 
+        <Chessboard arePremovesAllowed={true} 
            position={game.fen()} 
           onPieceDrop={onDrop}
           boardWidth={650}
