@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Puzzle" ALTER COLUMN "moves" SET NOT NULL,
+ALTER COLUMN "moves" SET DATA TYPE TEXT;

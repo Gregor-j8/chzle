@@ -49,16 +49,17 @@ game   Game   @relation(fields: [gameId], references: [id])
 
 model userPuzzle {
   id     String @id @default(cuid())
-  userId String @unique
+  userId String 
   user   User   @relation(fields: [userId], references: [id])
   puzzleid String @unique
-  puzzle   Puzzle   @relation(fields: [userId], references: [id], map: "userPuzzle_userId_puzzleId_fkey")
+  puzzle   Puzzle   @relation(fields: [puzzleid], references: [id], map: "userPuzzle_userId_puzzleId_fkey")
+  issolved Boolean
 }
 
 model Puzzle {
   id String @id
   fen String
-  moves String[]
+  moves String
   puzzlerating Int
   ratingdeviation Int
   Population Int

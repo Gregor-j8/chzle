@@ -8,10 +8,6 @@ import { trpc } from "@/utils/trpc";
 import { useUser } from "@clerk/nextjs";
 import VsComputerModal from "../game/vscomputermodal";
 
-interface AIMove {
-  [key: string]: string;
-}
-
 function GamePage() {
   const user = useUser();
   const createGame = trpc.game.createGame.useMutation();
@@ -81,7 +77,7 @@ function GamePage() {
     }
     if (!user.user) return;
     if (currentGame.isCheckmate() || currentGame.isDraw()) {
-      // Save the final move to the database
+
       const gameMoves = whiteGameHistory.map((val, i) => `${i + 1}. ${val} ${blackGameHistory[i]},`).join(" ");
       const gamePng = gameMoves
 

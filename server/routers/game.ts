@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, protectedProcedure, publicProcedure } from "../trpc";
+import { router, protectedProcedure } from "../trpc";
 
 export const gameRouter = router({
   createGame: protectedProcedure
@@ -10,7 +10,6 @@ export const gameRouter = router({
       result: z.string()
     }))
     .mutation(async ({ input, ctx }) => {
-      console.log(input)
       const { whiteId, blackId, pgn, result } = input;
       const game = await ctx.prisma.game.create({
           data: { whiteId, blackId, pgn, result },

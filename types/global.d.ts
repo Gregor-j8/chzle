@@ -6,3 +6,7 @@ declare module 'js-chess-engine' {
       get fen(): string;
     }
   }
+
+  interface AIMove {
+    [key: string]: string;
+  }
