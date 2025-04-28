@@ -43,8 +43,6 @@ export default function Puzzles() {
     return <div><LoadingPage /></div>
   }
 
-  
-
   return (
     <Board
       startingFen={startingFen}
