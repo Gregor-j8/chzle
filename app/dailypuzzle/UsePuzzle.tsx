@@ -36,7 +36,7 @@ export default function UsePuzzle(): PuzzleData {
         const fullHistory = chess.history({ verbose: true })
         chess.reset()
 
-        for (let i = 0; i < initialPly - 1; i++) {
+        for (let i = 0; i <= initialPly; i++) {
           chess.move(fullHistory[i])
         }
 

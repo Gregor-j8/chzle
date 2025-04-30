@@ -69,3 +69,10 @@ model Puzzle {
   openingTags String? 
   userPuzzles  userPuzzle[]
 }
+
+model DailyPuzzle {
+  id String @id
+  userId String
+  
+  history String[]
+}
