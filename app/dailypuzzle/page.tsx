@@ -5,14 +5,20 @@ import { LoadingPage } from '../_components/loading'
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Chess, Square } from "chess.js"
+import { trpc } from "@/utils/trpc"
+import { useUser } from "@clerk/nextjs"
 
 export default function Page() {
-  const { startingFen, history, solutionMoves, loading } = usePuzzle()
+  const user = useUser()
+  const mutation = trpc.dailypuzzle.completedDailyPuzzles.useMutation()
+  const { startingFen, history, solutionMoves, loading, rating, puzzleId } = usePuzzle()
   const [game, setGame] = useState(new Chess())
   const [moves, setMoves] = useState<string[]>([])
   const [oldMoves, setOldMoves] = useState<string[]>([])
   const [gameStatus, setGameStatus] = useState("")
   const [playerColor, setPlayerColor] = useState<"w" | "b">("w")
+  console.log(puzzleId)
+  console.log(rating)
 
   const makeAIMove = useCallback((currentGame: Chess, solutionMoves: string[]) => {
     if (currentGame.isGameOver() || solutionMoves.length === 0) return null
@@ -84,6 +90,13 @@ export default function Page() {
     setGame(gameCopy)
   
     if (updatedMoves.length === 0) {
+      if (!user.user) return     
+            mutation.mutate({
+                userId: user.user.id,
+                puzzleId: puzzleId,
+                rating: rating,
+                completedDate: new Date().toISOString().slice(0, 10)
+            });
       toast.success("Puzzle completed!", { duration: 3000, position: "top-center" })
       return true
     }

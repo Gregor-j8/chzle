@@ -71,10 +71,9 @@ model Puzzle {
 }
 
 model DailyPuzzle {
-  id String @id
+  id String @id @default(cuid())
   puzzleId String
   userId String
   rating Int
-  history String[]
-  completedDate DateTime
+  completedDate String
 }
