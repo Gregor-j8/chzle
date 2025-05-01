@@ -9,6 +9,8 @@ type PuzzleData = {
   solutionMoves: Move[] 
   loading: boolean
   error: string | null
+  puzzleId: string
+  rating: number
 }
 
 export default function UsePuzzle(): PuzzleData {
@@ -17,12 +19,16 @@ export default function UsePuzzle(): PuzzleData {
   const [solutionMoves, setSolutionMoves] = useState<Move[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [puzzleId, setPuzzleId] = useState<string>('')
+  const [rating, setRating] = useState<number>(0)
 
   useEffect(() => {
     const fetchPuzzle = async () => {
       try {
         const data = await getPuzzles()
         const pgn = data?.game.pgn
+        setPuzzleId(data?.puzzle.id)
+        setRating(data?.puzzle.rating)
         setSolutionMoves(data?.puzzle.solution)
         const initialPly = data?.puzzle.initialPly
 
@@ -54,6 +60,6 @@ export default function UsePuzzle(): PuzzleData {
     fetchPuzzle()
   }, [])
 
-  return { startingFen, history, solutionMoves, loading, error }
+  return { startingFen, history, solutionMoves, loading, error, rating, puzzleId }
 }
 
