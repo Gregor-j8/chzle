@@ -17,8 +17,6 @@ export default function Page() {
   const [oldMoves, setOldMoves] = useState<string[]>([])
   const [gameStatus, setGameStatus] = useState("")
   const [playerColor, setPlayerColor] = useState<"w" | "b">("w")
-  console.log(puzzleId)
-  console.log(rating)
 
   const makeAIMove = useCallback((currentGame: Chess, solutionMoves: string[]) => {
     if (currentGame.isGameOver() || solutionMoves.length === 0) return null

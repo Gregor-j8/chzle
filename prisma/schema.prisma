@@ -22,29 +22,30 @@ model User {
   password   String?
   rating     Int      @default(1200)
   createdAt  DateTime @default(now())
-  post Post? @relation
+  postId String? 
+  post   Post[]
   userPuzzles userPuzzle[]
 }
 
 model Game {
   id        String   @id @default(cuid())
-  whiteId   String
-  blackId   String
+  whiteid   String
+  blackid   String
   pgn     String
   result String
   createdAt DateTime @default(now())
-  post Post? @relation()
+  post Post[]
 }
 
 model Post {
 id String @id @default(cuid())
-userId String @unique
-user   User   @relation(fields: [userId], references: [id])
+userid String
+user   User   @relation(fields: [userid], references: [id])
 header String
 description String 
 createdat DateTime @default(now())
-gameId String @unique
-game   Game   @relation(fields: [gameId], references: [id])
+gameId String? @unique
+game   Game?   @relation(fields: [gameId], references: [id])
 }
 
 model userPuzzle {
