@@ -20,7 +20,7 @@ function HomePage() {
   }
 
   return (
-    <div className="h-screen overflow-hidden">
+    <div className="h-screen overflow-hidden hide-scrollbar">
       <main className="overflow-none flex h-screen justify-center bg-gray-900">
         <div className="flex h-full w-full flex-col border-x border-slate-400 md:max-w-2xl">
             <Posts />

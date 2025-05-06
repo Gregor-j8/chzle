@@ -13,7 +13,7 @@ export default function Posts() {
     }
 
     return (
-        <div className="h-full overflow-y-auto p-4">
+        <div className="h-full overflow-y-auto p-4 hide-scrollbar">
             {data.map(post => (
                 <div 
                     key={post.id} 
