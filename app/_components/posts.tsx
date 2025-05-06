@@ -11,18 +11,16 @@ export default function Posts() {
     if (!data) {
         return <div>No Posts Found</div>;
     }
-
+    console.log(data)
     return (
         <div className="h-full overflow-y-auto p-4 hide-scrollbar">
             {data.map(post => (
-                <div 
-                    key={post.id} 
-                    className="m-4 rounded-2xl border border-slate-700 bg-gray-800 p-4 shadow-md transition hover:shadow-lg"
-                >
+                <div key={post.id} 
+                    className="m-4 rounded-2xl border border-slate-700 bg-gray-800 p-4 shadow-md transition hover:shadow-lg">
                     <h2 className="text-xl font-semibold text-white">{post.header}</h2>
                     <p className="mt-2 text-sm text-slate-300">{post.description}</p>
                     <div className="flex justify-between mt-4 text-xs text-slate-500">
-                        <span className="font-medium">Posted by{post?.userid}</span>
+                        <span className="font-medium">Posted by {post?.user.username}</span>
                         <span className="font-medium">Posted on {post.createdat.toLocaleDateString()}</span>
                     </div>
                 </div>
