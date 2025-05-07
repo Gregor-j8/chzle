@@ -40,7 +40,5 @@ export const userPosts = router({
             },
             take: 20
         })
-
     })
-
 });
