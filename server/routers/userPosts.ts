@@ -40,5 +40,18 @@ export const userPosts = router({
             },
             take: 20
         })
+    }),
+    getPostDetails: protectedProcedure.input(z.string())
+    .query(async ({ctx, input}) => {
+        if (!input.trim()) return 
+        return ctx.prisma.post.findUnique({
+            include:{
+                user: true,
+                // game: true
+            },
+            where: {
+                id: input
+            }
+        })
     })
 });

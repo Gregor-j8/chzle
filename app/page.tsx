@@ -1,7 +1,7 @@
 'use client'
 import { trpc } from "@/utils/trpc"
 import { useUser } from "@clerk/nextjs"
-import { LoadingSpinner } from "./_components/loading"
+import { LoadingPage } from "./_components/loading"
 import Posts from "./_components/posts"
 import Link from "next/link"
 import {  useState } from "react"
@@ -15,10 +15,10 @@ function HomePage() {
   })
 
   if (isLoading) {
-    return <div><LoadingSpinner/></div>
+    return <div><LoadingPage/></div>
   }
   if (!data) {
-    return <div><LoadingSpinner/></div>
+    return <div><LoadingPage/></div>
   }
 
   return (

@@ -2,6 +2,7 @@ import { trpc } from "@/utils/trpc"
 import { LoadingPage } from "./loading"
 import { useEffect, useMemo, useState } from "react"
 import debounce from "lodash.debounce"
+import Link from "next/link"
 
 export default function Posts({ searchText }: { searchText: string }) {
   const { data, isLoading } = trpc.userPostsRouter.GetAllPosts.useQuery()
@@ -39,7 +40,7 @@ export default function Posts({ searchText }: { searchText: string }) {
       {postsToDisplay.map(post => (
         <div key={post.id} 
             className="m-4 rounded-2xl border border-slate-700 bg-gray-800 p-4 shadow-md transition hover:shadow-lg">
-            <h2 className="text-xl font-semibold text-white">{post.header}</h2>
+            <Link href={`/${post.id}`} className="text-xl font-semibold text-white">{post.header}</Link>
             <p className="mt-2 text-sm text-slate-300">{post.description}</p>
             <div className="flex justify-between mt-4 text-xs text-slate-500">
                 <span className="font-medium">Posted by {post?.user.username}</span>
