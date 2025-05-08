@@ -1,138 +1,136 @@
-"use client";
-import { toast } from "react-hot-toast";
-import { Chessboard } from "react-chessboard";
-import { useState } from "react";
-import { Chess } from "chess.js";
-import { Game } from "js-chess-engine";
-import { trpc } from "@/utils/trpc";
-import { useUser } from "@clerk/nextjs";
-import VsComputerModal from "../game/vscomputermodal";
+"use client"
+import { useEffect, useState, useCallback } from "react"
+import { Chess, Move, Square } from "chess.js"
+import { Game as EngineGame } from "js-chess-engine"
+import { Chessboard } from "react-chessboard"
+import { useUser } from "@clerk/nextjs"
+import { toast } from "react-hot-toast"
+import { trpc } from "@/utils/trpc"
+import VsComputerModal from "../game/vscomputermodal"
 
-function GamePage() {
-  const user = useUser();
-  const createGame = trpc.game.createGame.useMutation();
-  const [game, setGame] = useState(() => new Chess());
-  const [isThinking, setIsThinking] = useState(false);
-  const [gameStatus, setGameStatus] = useState("Your turn (White)");
-  const [result, setResult] = useState("");
-  const [whiteGameHistory, setwhiteGameHistory] = useState<string[]>([]);
-  const [blackGameHistory, setBlackGameHistory] = useState<string[]>([]);
-  const [aiLevel, setAiLevel] = useState(0);
+export default function GamePage() {
+  const { user } = useUser()
+  const createGame = trpc.game.createGame.useMutation()
+  const [chess, setChess] = useState<Chess | null>(null)
+  const [aiLevel, setAiLevel] = useState<number>(0)
+  const [playerColor, setPlayerColor] = useState<"w" | "b" | null>(null)
+  const [moveHistory, setMoveHistory] = useState<Move[]>([])
+  const [result, setResult] = useState<string>("")
+  const [status, setStatus] = useState<string>("Waiting...")
+  const [isAITurn, setIsAITurn] = useState<boolean>(false)
+  const isPlayerTurn = chess && chess.turn() === playerColor
 
-  const makeAIMove = (currentGame: Chess): void => {
-    if (currentGame.isGameOver() || isThinking) return;
+  useEffect(() => {
+    if (aiLevel && playerColor && !chess) {
+      const newGame = new Chess()
+      setChess(newGame)
+      if (playerColor === "b") {
+        handleAIMove(newGame)
+      }}}, [aiLevel, playerColor])
 
-    setIsThinking(true);
-    setGameStatus("Computer is thinking...");
+  const handleAIMove = useCallback(
+    (gameState: Chess) => {
+      if (gameState.isGameOver()) return
+      setIsAITurn(true)
+      setStatus("Computer is thinking...")
+      setTimeout(() => {
+        const engine = new EngineGame(gameState.fen())
+        const move = engine.aiMove(aiLevel)
+        const from = Object.keys(move)[0].toLowerCase()
+        const to = move[from.toUpperCase()].toLowerCase()
+        const updatedGame = new Chess(gameState.fen())
+        const madeMove = updatedGame.move({ from, to, promotion: "q" })
+        if (madeMove) {
+          setMoveHistory((prev) => [...prev, madeMove])
+          setChess(updatedGame)
+          updateStatus(updatedGame)
+        }
+        setIsAITurn(false)
+      }, 500)
+    }, [aiLevel])
 
-    setTimeout(() => {
-        const engineGame = new Game(currentGame.fen());
-        
-        const aiMove: AIMove = engineGame.aiMove(aiLevel);
-        const from: string = Object.keys(aiMove)[0].toLowerCase();
-        const to: string = aiMove[Object.keys(aiMove)[0]].toLowerCase();
-        
-        const gameCopy = new Chess(currentGame.fen());
-        const game = gameCopy.move({from: from, to: to});
-        if (gameCopy) {
-        const newHistory = [...blackGameHistory, game.san];
-        setBlackGameHistory(newHistory);
-        setGame(gameCopy);
-        updateGameStatus(gameCopy);
-        setIsThinking(false);
-    }}, 500);
-  };
+  const updateStatus = useCallback(
+    (game: Chess) => {
+      if (game.isCheckmate()) {
+        const winner = game.turn() === "w" ? "Black" : "White"
+        const res = game.turn() === "w" ? "0-1" : "1-0"
+        setResult(res)
+        setStatus(`Checkmate — ${winner} wins!`)
+      } else if (game.isDraw()) {
+        setResult("1/2-1/2")
+        setStatus("Draw!")
+      } else if (game.isCheck()) {
+        setStatus("Check!")
+      } else {
+        setStatus(game.turn() === playerColor ? "Your turn" : "Computer's turn")
+      }
+    }, [playerColor])
 
-  const onDrop = (source: string, target: string) => {
-    const gameCopy = new Chess(game.fen()); 
-    const move = gameCopy.move({ from: source, to: target});
-
-      if (move == null) {
-        toast.error("Invalid move! Please try again.");
-        return move;
+  const handleDrop = useCallback(
+    (source: Square, target: Square) => {
+      if (!chess || !isPlayerTurn) {
+        toast.error("Not your turn!")
+        return false
       }
 
-      const newHistory = [...whiteGameHistory, move.san];
-      setwhiteGameHistory(newHistory);
-      setGame(gameCopy);
-      updateGameStatus(gameCopy);
-        
-      if (!gameCopy.isGameOver()) {
-        setTimeout(() => makeAIMove(gameCopy), 300);
+      const legalMoves = chess.moves({ square: source, verbose: true })
+      const valid = legalMoves.find((m) => m.to === target)
+      if (!valid) {
+        toast.error("Invalid move.")
+        return false
       }
-      return move;
-  };
+      const newGame = new Chess(chess.fen())
+      const move = newGame.move({ from: source, to: target, promotion: "q" })
+      if (move) {
+        setMoveHistory((prev) => [...prev, move])
+        setChess(newGame)
+        updateStatus(newGame)
+        if (!newGame.isGameOver()) setTimeout(() => handleAIMove(newGame), 300)
+        return true
+      }
+      return false
+    }, [chess, isPlayerTurn, handleAIMove, updateStatus])
 
-  const updateGameStatus = (currentGame: Chess) => {
-    if (currentGame.isCheckmate()) {
-      setResult(currentGame.turn() === 'w' ? '0-1' : '1-0');
-      setGameStatus(`Checkmate! ${currentGame.turn() === 'w' ? 'Black' : 'White'} wins!`);
-    } else if (currentGame.isDraw()) {
-      setGameStatus("Game Over - Draw!");
-      setResult("1/2-1/2");
-    } else if (currentGame.isCheck()) {
-      setGameStatus(`Check! ${currentGame.turn() === 'w' ? 'White' : 'Black'} to move.`);
-    } else {
-      setGameStatus(currentGame.turn() === 'w' ? 'Your turn (White)' : 'Computer\'s turn (Black)');
-    }
-    if (!user.user) return;
-    if (currentGame.isCheckmate() || currentGame.isDraw()) {
+  useEffect(() => {
+    if (!user?.id || !chess || !result || moveHistory.length === 0) return
 
-      const gameMoves = whiteGameHistory.map((val, i) => `${i + 1}. ${val} ${blackGameHistory[i]},`).join(" ");
-      const gamePng = gameMoves
+    const pgn = moveHistory.reduce((str, move, i) => {
+        const prefix = i % 2 === 0 ? `${Math.floor(i / 2) + 1}. ` : ""
+        return str + prefix + move.san + " "
+      }, "").trim()
 
-      if (gamePng) {
-        createGame.mutate({
-          whiteId: user.user.id,
-          blackId: "computer",
-          pgn: gamePng,
-          result: result,
-        });
-    };  
-  };
-}
+    createGame.mutate({
+      whiteId: playerColor === "w" ? user.id : "computer",
+      blackId: playerColor === "b" ? user.id : "computer",
+      pgn,
+      result,
+    })
+  }, [result])
 
   const resetGame = () => {
-    setGame(new Chess());
-    setGameStatus("Your turn (White)");
-  };
+    setChess(null)
+    setMoveHistory([])
+    setResult("")
+    setStatus("Waiting...")
+    setIsAITurn(false)
+    setAiLevel(0)
+    setPlayerColor(null)
+  }
 
-  const undoMoves = () => {
-    const gameCopy = new Chess(game.fen());
-    if (gameCopy.history().length >= 2) {
-      gameCopy.undo();
-      gameCopy.undo(); 
-      setGame(gameCopy);
-      updateGameStatus(gameCopy);
-    }
-  };
+  if (!aiLevel || !playerColor || !chess) {
+    return <VsComputerModal setAiLevel={setAiLevel} setPlayerColor={setPlayerColor} />
+  }
 
   return (
-    !aiLevel ? ( 
-      <VsComputerModal
-        setAiLevel={setAiLevel}
-      />
-    ) : (
-      <div className="flex flex-col justify-center items-center py-8 bg-slate-100">
-      <h1 className="text-xl font-bold mb-2">Chess Game vs Computer</h1>
-      <div className="mb-2 text-lg">{gameStatus}</div>
-      
-      <div className="shadow-lg rounded-md overflow-hidden">
-        <Chessboard arePremovesAllowed={true} 
-           position={game.fen()} 
-          onPieceDrop={onDrop}
-          boardWidth={650}
-        />
-      </div> 
-      <div className="mt-4 flex gap-4">
-        <button className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded cursor-pointer"
-          onClick={resetGame}>New Game
-        </button>
-        <button className="bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 rounded cursor-pointer" onClick={undoMoves}
-          >Undo Move
-        </button>
-      </div>
+    <div className="h-screen overflow-hidden bg-gray-900">
+      <main className="flex flex-col items-center justify-center h-full py-10 px-4">
+        <h1 className="text-2xl font-bold text-white mb-4">Chess vs Computer</h1>
+        <p className="text-lg text-gray-300 mb-4">{status}</p>
+        <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
+          <Chessboard boardWidth={Math.min(600)} position={chess.fen()} onPieceDrop={handleDrop} arePremovesAllowed boardOrientation={playerColor === "w" ? "white" : "black"}/>
+        </div>
+        <button className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors" onClick={resetGame}> Start New Game</button>
+      </main>
     </div>
-    ))};
-
-export default GamePage;
+  )
+}

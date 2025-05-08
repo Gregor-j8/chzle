@@ -1,32 +1,56 @@
+"use client"
+import { useState } from "react"
+import Link from "next/link"
 
-import Link from "next/link";
+interface VsComputerModalProps {
+  setAiLevel: (level: number) => void
+  setPlayerColor: (color: "w" | "b") => void
+}
 
-export default function VsComputerModal({ setAiLevel }: { setAiLevel: (level: number) => void;  }) {
+export default function VsComputerModal({ setAiLevel, setPlayerColor }: VsComputerModalProps) {
+  const [difficulty, setDifficulty] = useState<number>(0)
+  const [color, setColor] = useState<"w" | "b" | "">("")
+
+  const handleStart = () => {
+    if (difficulty > 0 && color) {
+      setAiLevel(difficulty)
+      setPlayerColor(color)
+    }
+  }
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center">
-      <div className="fixed inset-0 bg-black opacity-50"></div>
-      <div className="bg-white rounded-lg shadow-lg p-6 z-50">
-        <h2 className="text-xl font-bold mb-4">Vs Computer</h2>
-        <p>Choose difficulty to start</p>
-        <select onChange={(e) => {setAiLevel(Number(e.target.value))}} className="mt-2 mb-4 border border-gray-300 rounded p-2 w-full">
-            <option value="0">Choose difficulty</option>
-            <option value="1">Easy</option>
-            <option value="2">Medium</option>
-            <option value="3">Hard</option>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-90">
+    <div className="bg-gray-800 text-white rounded-lg shadow-xl p-6 w-full max-w-md">
+      <h2 className="text-2xl font-bold text-center mb-6">Play vs Computer</h2>
+      <div className="mb-6">
+        <label className="block mb-2 text-gray-300 font-medium">Choose Difficulty</label>
+        <select className="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500" value={difficulty} onChange={(e) => setDifficulty(Number(e.target.value))}>
+          <option value={0}>Select difficulty</option>
+          <option value={1}>Easy</option>
+          <option value={2}>Medium</option>
+          <option value={3}>Hard</option>
         </select>
-        <p>Choose color</p>
-        <label htmlFor="radio">
-            <input type="radio" name="color" value="white" 
-            className="inline-block px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium cursor-pointer"
-             /> White
-            <input type="radio" name="color" value="black" 
-            className="inline-block px-5 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium cursor-pointer"
-            /> Black
-        </label>
-        <div className="mt-4 flex justify-end">
-          <button className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"><Link href={"/"}>Close</Link></button>
+      </div>
+      <div className="mb-6">
+        <label className="block mb-2 text-gray-300 font-medium">Choose Color</label>
+        <div className="flex gap-4">
+          <button className={`flex-1 p-3 rounded-lg border ${color === "w"? "bg-blue-600 border-blue-500 text-white"
+            : "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600"}`}
+            onClick={() => setColor("w")}>White</button>
+          <button className={`flex-1 p-3 rounded-lg border ${color === "b"
+            ? "bg-blue-600 border-blue-500 text-white" : "bg-gray-700 border-gray-600 text-gray-300 hover:bg-gray-600"}`}
+            onClick={() => setColor("b")}>Black</button>
         </div>
       </div>
+      <div className="flex justify-between items-center">
+        <Link href="/" className="text-gray-400 hover:underline text-sm">Cancel</Link>
+        <button onClick={handleStart} disabled={!(difficulty > 0 && color)}
+          className={`px-4 py-2 rounded-lg font-semibold ${difficulty > 0 && color ? "bg-blue-600 hover:bg-blue-700 text-white"
+          : "bg-gray-600 text-gray-400 cursor-not-allowed"}`}>
+          Start Game
+        </button>
+      </div>
     </div>
-  );
+  </div>
+  )
 }

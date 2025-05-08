@@ -25,7 +25,7 @@ export const userPosts = router({
       })
       return post
     }),
-    filterPosts: publicProcedure.input(z.string())
+    filterPosts: publicProcedure.input(z.string().cuid())
     .query(async ({ctx, input}) => {
         if (!input.trim()) return;
         return ctx.prisma.post.findMany({

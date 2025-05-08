@@ -6,11 +6,14 @@ import { LoadingSpinner } from '../_components/loading'
 
 export default function PostPage() {
   const { id } = useParams()
+
+  if (id === undefined) return null
   const [data] = trpc.userPostsRouter.getPostDetails.useSuspenseQuery(id.toString())
     
     if (!data) {
         return <div><LoadingSpinner/></div>
     }
+
   return (
     <div className="m-4 rounded-2xl border border-slate-700 bg-gray-800 p-6 shadow-md transition hover:shadow-lg">
         <h1 className="text-2xl font-bold text-white">{data.header}</h1>

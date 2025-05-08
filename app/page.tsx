@@ -4,7 +4,7 @@ import { useUser } from "@clerk/nextjs"
 import { LoadingPage } from "./_components/loading"
 import Posts from "./_components/posts"
 import Link from "next/link"
-import {  useState } from "react"
+import { useState } from "react"
 
 function HomePage() {  
   const [searchText, setSearchText] = useState('')
@@ -14,12 +14,12 @@ function HomePage() {
     enabled: !!user?.username,
   })
 
-  if (isLoading) {
-    return <div><LoadingPage/></div>
-  }
-  if (!data) {
-    return <div><LoadingPage/></div>
-  }
+  // if (isLoading) {
+  //   return <div><LoadingPage/></div>
+  // }
+  // if (!data) {
+  //   return <div><LoadingPage/></div>
+  // }
 
   return (
     <div className="h-screen overflow-hidden hide-scrollbar">
