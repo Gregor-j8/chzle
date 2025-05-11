@@ -14,9 +14,16 @@ export const ProfileRouter = router({
       const user = users.data[0];
       const userdata = await ctx.prisma.user.findFirst({
         where: { clerk_id: user.id },
+        take: 1
       })
      const userPuzzles = await ctx.prisma.userPuzzle.findMany({
-      where: {userId: user.id}
+      where: {userId: user.id},
+      take: 5
+     })
+      console.log(userPuzzles.map((p) => p.puzzleid));
+     const Puzzles = await ctx.prisma.puzzle.findMany({
+      where: {id: { in: userPuzzles.map(puzzle => puzzle.puzzleid) }},
+      take: 5
      })
      const userGame = await ctx.prisma.game.findMany({
       where: {
@@ -24,10 +31,12 @@ export const ProfileRouter = router({
           { whiteid: user.id },
           { blackid: user.id },
         ],
-      }
+      },
+      take: 5
      })
      const userPosts = await ctx.prisma.post.findMany({
-      where: {userid: user.id}
+      where: {userid: user.id},
+      take: 5
      })
       if (!user) {
         throw new TRPCError({
@@ -45,7 +54,7 @@ export const ProfileRouter = router({
         imageUrl: user.imageUrl,
         rating: userdata?.rating,
         posts: userPosts,
-        userPuzzles: userPuzzles,
+        userPuzzles: Puzzles,
         games: userGame
       }
     }),
