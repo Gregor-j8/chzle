@@ -10,7 +10,7 @@ export const appRouter = router({
   profile: ProfileRouter,
   puzzle: puzzleRouter,
   dailypuzzle: dailypuzzleRouter,
-  userPostsRouter: userPosts
+  userPostsRouter: userPosts,
 });
 
 export type AppRouter = typeof appRouter;

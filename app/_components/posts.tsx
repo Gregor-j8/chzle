@@ -43,7 +43,7 @@ export default function Posts({ searchText }: { searchText: string }) {
             <Link href={`/${post.id}`} className="text-xl font-semibold text-white">{post.header}</Link>
             <p className="mt-2 text-sm text-slate-300">{post.description}</p>
             <div className="flex justify-between mt-4 text-xs text-slate-500">
-                <span className="font-medium">Posted by {post?.user.username}</span>
+                <Link href={`/profile/${post.user.username}`} className="font-medium">Posted by {post?.user.username}</Link>
                 <span className="font-medium">Posted on {post.createdat.toLocaleDateString()}</span>
             </div>
         </div>

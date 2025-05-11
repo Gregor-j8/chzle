@@ -11,27 +11,28 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <html lang="en">
-      <body>
-        <ClerkProvider>
-          <header className="flex justify-end items-center p-4 gap-4 h-16 border-b">
-            <NavBar />
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header>
-          <Toaster position="top-right" reverseOrder={false} />
-          <trpc.Provider client={trpcClient} queryClient={queryClient}>
-            <QueryClientProvider client={queryClient}>
+    <ClerkProvider>
+      <html lang="en">
+        <body>
+          <QueryClientProvider client={queryClient}>
+            <trpc.Provider client={trpcClient} queryClient={queryClient}>
+              <header className="flex justify-end items-center p-4 gap-4 h-16 border-b">
+                <NavBar />
+                <SignedOut>
+                  <SignInButton />
+                  <SignUpButton />
+                </SignedOut>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
+              </header>
+
+              <Toaster position="top-right" reverseOrder={false} />
               {children}
-            </QueryClientProvider>
-          </trpc.Provider>
-        </ClerkProvider>
-      </body>
-    </html>
+            </trpc.Provider>
+          </QueryClientProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
