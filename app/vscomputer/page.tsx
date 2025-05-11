@@ -7,6 +7,7 @@ import { useUser } from "@clerk/nextjs"
 import { toast } from "react-hot-toast"
 import { trpc } from "@/utils/trpc"
 import VsComputerModal from "../game/vscomputermodal"
+import { createId } from '@paralleldrive/cuid2'
 
 export default function GamePage() {
   const { user } = useUser()
@@ -100,10 +101,12 @@ export default function GamePage() {
       }, "").trim()
 
     createGame.mutate({
-      whiteId: playerColor === "w" ? user.id : "computer",
-      blackId: playerColor === "b" ? user.id : "computer",
+      id: createId(), 
+      whiteid: playerColor === "w" ? user.id : "computer",
+      blackid: playerColor === "b" ? user.id : "computer",
       pgn,
       result,
+      createdAt: new Date()
     })
   }, [result])
 

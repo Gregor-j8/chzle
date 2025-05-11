@@ -1,7 +1,7 @@
 'use client';
 import './globals.css';
 import { Toaster } from "react-hot-toast";
-import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/nextjs';
+import { ClerkProvider } from '@clerk/nextjs';
 import { trpc, trpcClient } from '../utils/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
@@ -13,21 +13,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <ClerkProvider>
       <html lang="en">
-        <body>
+        <body className="box-border border-gray-200 bg-gray-100 min-h-screen">
           <QueryClientProvider client={queryClient}>
             <trpc.Provider client={trpcClient} queryClient={queryClient}>
-              <header className="flex justify-end items-center p-4 gap-4 h-16 border-b">
-                <NavBar />
-                <SignedOut>
-                  <SignInButton />
-                  <SignUpButton />
-                </SignedOut>
-                <SignedIn>
-                  <UserButton />
-                </SignedIn>
-              </header>
-
               <Toaster position="top-right" reverseOrder={false} />
+              <NavBar />
               {children}
             </trpc.Provider>
           </QueryClientProvider>

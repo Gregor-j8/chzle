@@ -4,15 +4,18 @@ import { router, protectedProcedure } from "../trpc";
 export const gameRouter = router({
   createGame: protectedProcedure
     .input(z.object({
-      whiteId: z.string(),
-      blackId: z.string(),
+      id: z.string(),
+      whiteid: z.string(),
+      blackid: z.string(),
       pgn: z.string(),
-      result: z.string()
+      result: z.string(),
+      createdAt: z.date()
     }))
     .mutation(async ({ input, ctx }) => {
-      const { whiteId, blackId, pgn, result } = input;
+      console.log(input)
+      const { id, whiteid, blackid, pgn, result, createdAt } = input;
       const game = await ctx.prisma.game.create({
-          data: { whiteId, blackId, pgn, result },
+          data: { id, whiteid, blackid, pgn, result, createdAt },
       });
       return game
     }),
