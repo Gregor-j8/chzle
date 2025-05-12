@@ -94,18 +94,14 @@ export default function GamePage() {
 
   useEffect(() => {
     if (!user?.id || !chess || !result || moveHistory.length === 0) return
-
-    const pgn = moveHistory.reduce((str, move, i) => {
-        const prefix = i % 2 === 0 ? `${Math.floor(i / 2) + 1}. ` : ""
-        return str + prefix + move.san + " "
-      }, "").trim()
-
+    const pgn = moveHistory.map(m => `${m.from}${m.to}`).join(' ')
     createGame.mutate({
       id: createId(), 
       whiteid: playerColor === "w" ? user.id : "computer",
       blackid: playerColor === "b" ? user.id : "computer",
       pgn,
       result,
+      fen: chess.fen(),
       createdAt: new Date()
     })
   }, [result])

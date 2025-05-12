@@ -33,6 +33,7 @@ model Game {
   blackid   String
   pgn     String
   result String
+  fen String
   createdAt DateTime @default(now())
   post Post[]
 }
@@ -55,6 +56,7 @@ model userPuzzle {
   puzzleid String @unique
   puzzle   Puzzle   @relation(fields: [puzzleid], references: [id], map: "userPuzzle_userId_puzzleId_fkey")
   issolved Boolean
+  completedDate DateTime @default(now())
 }
 
 model Puzzle {

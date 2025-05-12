@@ -66,7 +66,8 @@ export const usePuzzleGame = (puzzles: Puzzle[] | undefined, puzzleIndex: number
             mutation.mutate({
                 userId: user.user.id,
                 puzzleid: puzzles[0].id,
-                issolved: true
+                issolved: true,
+                completedDate: new Date()
             });
         toast.success("congrats you solved this puzzle")
          setOldMoves([])

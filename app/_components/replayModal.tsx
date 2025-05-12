@@ -10,18 +10,21 @@ export default function ReplayModal({ puzzle }: any) {
   const [step, setStep] = useState(0)
 
   useEffect(() => {
-    if (puzzle?.fen) {
+    if (puzzle?.fen && !puzzle.pgn) {
       setFen(puzzle.fen)
+    } else {
+        setFen('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
     }
     if (puzzle?.moves) {
       setMoves(puzzle.moves.trim().split(' '))
-      setStep(0)
+    } else {
+        setMoves(puzzle.pgn.trim().split(' '))
     }
   }, [puzzle, chess])
 
   const getFenAtStep = (index: number) => {
     const t = new Chess()
-    t.load(puzzle.fen)
+    t.load(puzzle?.moves ? puzzle.fen : 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
     for (let i = 0; i < index; i++) {
       t.move({
         from: moves[i].slice(0, 2),
@@ -30,7 +33,7 @@ export default function ReplayModal({ puzzle }: any) {
       });
     }
     return t.fen()
-  };
+  }
 
   const handleForward = () => {
     if (step < moves.length) {

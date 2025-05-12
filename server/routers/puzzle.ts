@@ -15,11 +15,12 @@ export const puzzleRouter = router({
     z.object({
       userId: z.string(),
       puzzleid: z.string(),
-      issolved: z.boolean()
+      issolved: z.boolean(),
+      completedDate: z.date()
     })).mutation(async ({ input, ctx }) => {
-      const { userId, puzzleid, issolved} = input
+      const { userId, puzzleid, issolved, completedDate} = input
       const puzzle = await ctx.prisma.userPuzzle.create({
-        data: { userId, puzzleid, issolved }
+        data: { userId, puzzleid, issolved, completedDate }
       })
       return puzzle
     })

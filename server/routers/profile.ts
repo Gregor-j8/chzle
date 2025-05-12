@@ -18,12 +18,13 @@ export const ProfileRouter = router({
       })
      const userPuzzles = await ctx.prisma.userPuzzle.findMany({
       where: {userId: user.id},
-      take: 5
+      orderBy: { completedDate: 'desc' },
+      take: 6
      })
       console.log(userPuzzles.map((p) => p.puzzleid));
      const Puzzles = await ctx.prisma.puzzle.findMany({
       where: {id: { in: userPuzzles.map(puzzle => puzzle.puzzleid) }},
-      take: 5
+      take: 6
      })
      const userGame = await ctx.prisma.game.findMany({
       where: {
