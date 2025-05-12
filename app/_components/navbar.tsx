@@ -1,10 +1,10 @@
 'use client'
 import defaulticonimg from '@/public/defaulticonimg.jpg'
-import { SignInButton, SignUpButton, SignedIn, SignedOut } from '@clerk/nextjs'
+import { SignInButton, SignUpButton, SignedIn, SignedOut, SignOutButton  } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Link from "next/link"
-import { RedirectToSignIn, useUser } from '@clerk/clerk-react'
+import { useUser } from '@clerk/clerk-react'
 import Image from 'next/image'
 
 export default function NavBar() {
@@ -19,9 +19,7 @@ export default function NavBar() {
           router.push(selected)
         }
       }
-    if (!user) {
-      return RedirectToSignIn({ redirectUrl: '/dashboard' })
-    }
+
     return (
       <nav className="w-full flex items-center justify-between p-4 bg-white shadow-sm border-b">
       <div className="flex items-center gap-6">
@@ -59,7 +57,13 @@ export default function NavBar() {
         <Image src={user?.imageUrl || defaulticonimg} alt="Profile" width={32} height={32}
         className="rounded-full border hover:ring-2 ring-blue-400 transition border-none"/>
       </Link>
-    </SignedIn>
+    </SignedIn> 
+    {user && (
+        <SignOutButton>
+            <button className="px-4 py-2 bg-red-500 text-white rounded">Logout</button>
+        </SignOutButton>
+    )}
+
       </div>
     </nav>
   )

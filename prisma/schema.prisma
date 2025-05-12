@@ -25,6 +25,8 @@ model User {
   postId String[]
   post   Post[]
   userPuzzles userPuzzle[]
+  likes       Likes[]
+  comments    comments[]
 }
 
 model Game {
@@ -47,6 +49,26 @@ description String
 createdat DateTime @default(now())
 gameId String? @unique
 game   Game?   @relation(fields: [gameId], references: [id])
+comments comments[]
+likes Likes[]
+}
+
+model comments {
+  id String @id @default(cuid())
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+  userid String
+  user   User   @relation(fields: [userid], references: [id])
+  description String
+  createdAt DateTime @default(now())
+}
+model Likes {
+  id String @id @default(cuid())
+  postId String
+  post   Post   @relation(fields: [postId], references: [id])
+  userid String
+  user   User   @relation(fields: [userid], references: [id])
+  @@unique([postId, userid])
 }
 
 model userPuzzle {

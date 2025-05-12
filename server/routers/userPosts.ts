@@ -30,7 +30,7 @@ export const userPosts = router({
         if (!input.trim()) return;
         return ctx.prisma.post.findMany({
             include:{
-                user: true
+                user: true,
             },
             where: {
                 header: {
@@ -41,17 +41,82 @@ export const userPosts = router({
             take: 20
         })
     }),
-    getPostDetails: protectedProcedure.input(z.string())
+    getPostDetails: protectedProcedure.input(z.string().min(1))
     .query(async ({ctx, input}) => {
         if (!input.trim()) return 
         return ctx.prisma.post.findUnique({
             include:{
                 user: true,
-                // game: true
+                likes: {
+                    include: {
+                        user: true
+                    }
+                },
+                comments: {
+                    include: {
+                        user: true
+                    }
+                }
             },
             where: {
                 id: input
             }
         })
+    }),
+    CreateComments: protectedProcedure.input(
+    z.object({
+    userid: z.string(),
+    postId: z.string(),
+    description: z.string(),
+    createdAt: z.date()
+    })).mutation(async ({ctx, input}) => {
+        const { userid, postId, description, createdAt} = input
+      const comments = await ctx.prisma.comments.create({
+        data: { userid, postId, description, createdAt }
+      })
+      return comments
+    }),
+
+    deleteComment: protectedProcedure.input(z.string()) 
+    .mutation(async ({ ctx, input }) => {
+    const commentId = input
+    await ctx.prisma.comments.delete({
+    where: { id: commentId }})
+    return { success: true }
+    }),
+
+    UpdateComment: protectedProcedure.input(
+    z.object({
+    id: z.string(),
+    userid: z.string(),
+    postId: z.string(),
+    description: z.string(),
+    createdAt: z.date()
+    })).mutation(async ({ctx, input}) => {
+    const { userid, postId, description, createdAt} = input
+    const comments = await ctx.prisma.comments.update({
+    where: { id: input.id },
+    data: { userid, postId, description, createdAt }
     })
-});
+      return comments
+    }),
+    
+    CreateLikes: protectedProcedure.input(
+    z.object({
+    userid: z.string(),
+    postId: z.string(),
+    })).mutation(async ({ctx, input}) => {
+        const { userid, postId} = input
+      const likes = await ctx.prisma.likes.create({
+        data: { userid, postId }
+      })
+      return likes
+    }),
+    DeleteLike: protectedProcedure.input(z.string()) 
+    .mutation(async ({ ctx, input }) => {
+    const likeId = input
+    await ctx.prisma.likes.delete({
+    where: { id: likeId }})
+    return { success: true }
+    }),
+})

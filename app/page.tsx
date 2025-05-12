@@ -1,7 +1,6 @@
 'use client'
 import { trpc } from "@/utils/trpc"
 import { useUser } from "@clerk/nextjs"
-import { LoadingPage } from "./_components/loading"
 import Posts from "./_components/posts"
 import Link from "next/link"
 import { useState } from "react"
@@ -13,13 +12,6 @@ function HomePage() {
   const { data, isLoading } = trpc.profile.getUserByUsername.useQuery({ username }, {
     enabled: !!user?.username,
   })
-
-  // if (isLoading) {
-  //   return <div><LoadingPage/></div>
-  // }
-  // if (!data) {
-  //   return <div><LoadingPage/></div>
-  // }
 
   return (
     <div className="h-screen overflow-hidden hide-scrollbar">
