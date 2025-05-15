@@ -22,7 +22,7 @@ export default function GameSlideshow({ userId, onSelect}: { userId: string, onS
     return (
       <div className="w-full max-w-4xl mb-6">
         <h2 className="text-xl font-semibold text-white mb-4 text-center">Games</h2>
-        <h2 className="text-xl font-semibold text-white mb-4 text-center">You haven’t played yet!</h2>
+        <h2 className="text-xl font-semibold text-white mb-4 text-center">You havent played yet!</h2>
       </div>
     )
   }

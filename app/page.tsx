@@ -5,11 +5,11 @@ import Posts from "./_components/posts"
 import Link from "next/link"
 import { useState } from "react"
 
-function HomePage() {  
+function HomePage() {
   const [searchText, setSearchText] = useState('')
   const { user } = useUser()
   const username: string = user?.username ?? ""
-  const { data, isLoading } = trpc.profile.getUserByUsername.useQuery({ username }, {
+  const { data, isLoading } = trpc.profile.getUserProfileByUsername.useQuery({ username }, {
     enabled: !!user?.username,
   })
 
