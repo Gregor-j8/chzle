@@ -27,6 +27,7 @@ model User {
   userPuzzles userPuzzle[]
   likes       Likes[]
   comments    comments[]
+  messages    Message[] // Relation to Message model
 }
 
 model Game {
@@ -101,4 +102,13 @@ model DailyPuzzle {
   userId String
   rating Int
   completedDate String
+}
+
+
+model Message {
+  id        String   @id @default(cuid())
+  text      String
+  createdAt DateTime @default(now())
+  senderId  String? 
+  sender    User?    @relation(fields: [senderId], references: [id])
 }
