@@ -27,7 +27,9 @@ model User {
   userPuzzles userPuzzle[]
   likes       Likes[]
   comments    comments[]
-  messages    Message[] // Relation to Message model
+  messages    Message[] 
+  chatrooms Chatroom[]  @relation("ChatroomMembers")
+
 }
 
 model Game {
@@ -105,10 +107,20 @@ model DailyPuzzle {
 }
 
 
+model Chatroom {
+  id        String     @id @default(cuid())
+  name      String?
+  members   User[]     @relation("ChatroomMembers")
+  messages  Message[]
+  createdAt DateTime   @default(now())
+}
+
 model Message {
-  id        String   @id @default(cuid())
-  text      String
-  createdAt DateTime @default(now())
-  senderId  String? 
-  sender    User?    @relation(fields: [senderId], references: [id])
+  id         String    @id @default(cuid())
+  text       String
+  sender     User      @relation(fields: [senderId], references: [id])
+  senderId   String
+  chatroom   Chatroom  @relation(fields: [chatroomId], references: [id])
+  chatroomId String
+  createdAt  DateTime  @default(now())
 }

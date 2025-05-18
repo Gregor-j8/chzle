@@ -4,4 +4,4 @@ const socket = io({
   path: '/api/socket',
 })
 
-export default socket;
+export default socket

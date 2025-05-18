@@ -26,7 +26,6 @@ export async function GET(req: NextRequest) {
         console.log('[socket.io] Client disconnected:', socket.id)
       })
     })
-
     globalThis.io = io
   }
 
