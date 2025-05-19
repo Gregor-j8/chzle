@@ -18,7 +18,7 @@ export default function GamePage() {
   const [moveHistory, setMoveHistory] = useState<Move[]>([])
   const [result, setResult] = useState<string>("")
   const [status, setStatus] = useState<string>("Waiting...")
-  const [isAITurn, setIsAITurn] = useState<boolean>(false)
+  const [, setIsAITurn] = useState<boolean>(false)
   const isPlayerTurn = chess && chess.turn() === playerColor
 
   useEffect(() => {

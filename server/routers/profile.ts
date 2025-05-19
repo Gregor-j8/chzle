@@ -1,9 +1,41 @@
 import { z } from 'zod'
+import { createId } from '@paralleldrive/cuid2'
 import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
 import { clerkClient } from '@clerk/nextjs/server'
 
 export const ProfileRouter = router({
+  createUser: publicProcedure
+  .input(z.object({
+      clerkId: z.string(),
+      username: z.string(),
+      email: z.string(),
+      FullName: z.string(),
+      imageUrl: z.string(),
+      rating: z.number(),
+    }))
+  .mutation(async ({ ctx, input }) => {
+    return ctx.prisma.user.create({
+      data: {
+        id: createId(),
+        clerk_id: input.clerkId,
+        username: input.username,
+        email: input.email,
+        fullName: input.FullName,
+        rating: input.rating,
+        createdAt: new Date()
+      }
+    })
+  }),
+
+      findUser: protectedProcedure
+    .input(z.object({ clerk_id: z.string()}))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.user.findFirst({
+        where: { clerk_id: input.clerk_id }
+      })
+    }),
+
 getUserProfileByUsername: publicProcedure
   .input(z.object({ username: z.string() }))
   .query(async ({ ctx, input }) => {

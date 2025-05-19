@@ -12,8 +12,6 @@ interface FollowerProps {
 
 export default function Follower({ userId }: FollowerProps) {
 const {user} = useUser()
-const utils = trpc.useUtils()
-
   const { data, isLoading } = trpc.followRouter.getAllFollowing.useQuery(
     { followingId: userId },
     { enabled: !!userId }
@@ -39,7 +37,7 @@ const utils = trpc.useUtils()
               <div className="space-y-2">
                 {data?.map((follower) => (
                   <div key={follower.id} className="flex p-2 border rounded">
-                        <Image src={user?.imageUrl} alt={`${follower.following.username}'s profile`}
+                        <Image src={user?.imageUrl || "/default-profile.png"} alt={`${follower.following.username}'s profile`}
                         width={32} height={32} className="w-8 h-8 rounded-full object-cover"/>
                         <span className="text-black">
                             <Link href={`/profile/${follower.following.username}`}>{follower.following.username}</Link>

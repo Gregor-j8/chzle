@@ -3,13 +3,7 @@ import { useState } from 'react'
 import { Chessboard } from 'react-chessboard'
 import { trpc } from '@/utils/trpc'
 
-export default function PuzzleSlideshow({
-  userId,
-  onSelect,
-}: {
-  userId: string
-  onSelect: (puzzle: any) => void
-}) {
+export default function PuzzleSlideshow({userId, onSelect,}: { userId: string, onSelect: (puzzle) => void}) {
   const [page, setPage] = useState(0)
   const take = 3
   const skip = page * take

@@ -1,9 +1,9 @@
-"use client";
-import { trpc } from "@/utils/trpc";
-import { usePuzzleGame } from "./PuzzleGame";
-import { PuzzleBoard } from "./PuzzleBoard";
-import { useState } from "react";
-import { LoadingPage } from "../_components/loading";
+"use client"
+import { trpc } from "@/utils/trpc"
+import { usePuzzleGame } from "./PuzzleGame"
+import { PuzzleBoard } from "./PuzzleBoard"
+import { useState } from "react"
+import { LoadingPage } from "../_components/loading"
 
 export default function Puzzles() {
   const { data: puzzles, isLoading, refetch} = trpc.puzzle.getPuzzles.useQuery(undefined, {
@@ -11,7 +11,7 @@ export default function Puzzles() {
     staleTime: 1000 * 60 * 60,
   })
   const [puzzleIndex, setPuzzleIndex] = useState(0)
-  const {game, gameStatus, onDrop, setGame, setOldMoves} = usePuzzleGame(puzzles, puzzleIndex)
+  const {game, gameStatus, onDrop} = usePuzzleGame(puzzles, puzzleIndex)
 
   const nextPuzzle = async () => {
     const next = puzzleIndex + 1

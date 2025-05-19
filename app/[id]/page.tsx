@@ -1,6 +1,5 @@
 'use client'
-import { HandThumbUpIcon, HandThumbUpIcon as HandThumbUpOutline } from '@heroicons/react/24/solid'
-import { HandThumbUpIcon as HandThumbUpOutlineIcon } from '@heroicons/react/24/outline'
+import { HandThumbUpIcon, HandThumbUpIcon as HandThumbUpOutlineIcon } from '@heroicons/react/24/outline'
 import { MessageCircle, Trash2, Pencil } from "lucide-react"
 import { trpc } from '@/utils/trpc'
 import { useParams } from 'next/navigation'

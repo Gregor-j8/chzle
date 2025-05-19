@@ -1,27 +1,49 @@
 'use client'
 import defaulticonimg from '@/public/defaulticonimg.jpg'
-import { SignInButton, SignUpButton, SignedIn, SignedOut, SignOutButton  } from '@clerk/nextjs'
+import { SignInButton, SignUpButton, SignedIn, SignedOut, SignOutButton } from '@clerk/nextjs'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from "next/link"
 import { useUser } from '@clerk/clerk-react'
 import Image from 'next/image'
+import { trpc } from '@/utils/trpc'
 
 export default function NavBar() {
-  const {user} = useUser()
-    const router = useRouter()
-    const [value, setValue] = useState('')
+  const { user } = useUser()
+  const router = useRouter()
+  const [value, setValue] = useState('')
+ const utils = trpc.useUtils()
+const createUserMutation = trpc.profile.createUser.useMutation({
+  onSuccess: () => { utils.profile.findUser.invalidate({ clerk_id: user?.id }) }
+})
+  const { data } = trpc.profile.findUser.useQuery(
+    { clerk_id: user?.id ?? '' },
+    { enabled: !!user?.id }
+  )
+  
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value
+    setValue(selected)
+    if (selected) {
+      router.push(selected)
+    }
+  }
 
-    const handleChange = (e) => {
-        const selected = e.target.value;
-        setValue(selected)
-        if (selected) {
-          router.push(selected)
-        }
-      }
-
-    return (
-      <nav className="w-full flex items-center justify-between p-4 bg-white shadow-sm border-b">
+  useEffect(() => {
+    if (user && data === undefined) return
+    if (user && data === null && createUserMutation) {
+      createUserMutation.mutate({
+        clerkId: user.id,
+        username: user.username ?? '',
+        email: user.emailAddresses?.[0]?.emailAddress,
+        FullName: user.fullName ?? '',
+        imageUrl: user.imageUrl,
+        rating: 1200
+      })
+    }
+  }, [user, createUserMutation, data]) 
+  return (
+    <nav className="w-full flex items-center justify-between p-4 bg-white shadow-sm border-b">
       <div className="flex items-center gap-6">
         <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-sm font-bold text-white">
           ♟
@@ -52,18 +74,23 @@ export default function NavBar() {
           </SignUpButton>
         </SignedOut>
 
-    <SignedIn>
-      <Link href={`/profile/${user?.username}`}>
-        <Image src={user?.imageUrl || defaulticonimg} alt="Profile" width={32} height={32}
-        className="rounded-full border hover:ring-2 ring-blue-400 transition border-none"/>
-      </Link>
-    </SignedIn> 
-    {user && (
-        <SignOutButton>
-            <button className="px-4 py-2 bg-red-500 text-white rounded">Logout</button>
-        </SignOutButton>
-    )}
+        <SignedIn>
+          <Link href={`/profile/${user?.username}`}>
+            <Image
+              src={user?.imageUrl || defaulticonimg}
+              alt="Profile"
+              width={32}
+              height={32}
+              className="rounded-full border hover:ring-2 ring-blue-400 transition border-none"
+            />
+          </Link>
+        </SignedIn>
 
+        {user && (
+          <SignOutButton>
+            <button className="px-4 py-2 bg-red-500 text-white rounded">Logout</button>
+          </SignOutButton>
+        )}
       </div>
     </nav>
   )

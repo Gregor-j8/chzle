@@ -3,7 +3,13 @@ import React, { useEffect, useState } from 'react'
 import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
 
-export default function ReplayModal({ puzzle }: any) {
+interface Puzzle {
+  fen?: string
+  pgn?: string
+  moves?: string
+}
+
+export default function ReplayModal({ puzzle }: { puzzle: Puzzle }) {
   const [chess] = useState(new Chess())
   const [fen, setFen] = useState('')
   const [moves, setMoves] = useState<string[]>([])
@@ -17,14 +23,16 @@ export default function ReplayModal({ puzzle }: any) {
     }
     if (puzzle?.moves) {
       setMoves(puzzle.moves.trim().split(' '))
+    } else if (puzzle?.pgn) {
+      setMoves(puzzle.pgn.trim().split(' '))
     } else {
-        setMoves(puzzle.pgn.trim().split(' '))
+      setMoves([])
     }
   }, [puzzle, chess])
 
   const getFenAtStep = (index: number) => {
     const t = new Chess()
-    t.load(puzzle?.moves ? puzzle.fen : 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
+    t.load(puzzle?.moves ? (puzzle.fen ?? 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1') : 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1')
     for (let i = 0; i < index; i++) {
       t.move({
         from: moves[i].slice(0, 2),

@@ -1,17 +1,10 @@
 'use client'
-import { trpc } from "@/utils/trpc"
-import { useUser } from "@clerk/nextjs"
 import Posts from "./_components/posts"
 import Link from "next/link"
 import { useState } from "react"
 
 function HomePage() {
   const [searchText, setSearchText] = useState('')
-  const { user } = useUser()
-  const username: string = user?.username ?? ""
-  const { data, isLoading } = trpc.profile.getUserProfileByUsername.useQuery({ username }, {
-    enabled: !!user?.username,
-  })
 
   return (
     <div className="h-screen overflow-hidden hide-scrollbar"> 
@@ -31,4 +24,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default HomePage

@@ -8,7 +8,6 @@ type PuzzleData = {
   history: Move[]
   solutionMoves: Move[] 
   loading: boolean
-  error: string | null
   puzzleId: string
   rating: number
 }
@@ -18,48 +17,34 @@ export default function UsePuzzle(): PuzzleData {
   const [history, setHistory] = useState<Move[]>([])
   const [solutionMoves, setSolutionMoves] = useState<Move[]>([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [puzzleId, setPuzzleId] = useState<string>('')
   const [rating, setRating] = useState<number>(0)
 
   useEffect(() => {
     const fetchPuzzle = async () => {
-      try {
         const data = await getPuzzles()
         const pgn = data?.game.pgn
         setPuzzleId(data?.puzzle.id)
         setRating(data?.puzzle.rating)
         setSolutionMoves(data?.puzzle.solution)
         const initialPly = data?.puzzle.initialPly
-
         if (!pgn || !initialPly) {
           throw new Error('Invalid puzzle data')
         }
-
         const chess = new Chess()
         chess.loadPgn(pgn)
-
         const fullHistory = chess.history({ verbose: true })
         chess.reset()
-
         for (let i = 0; i <= initialPly; i++) {
           chess.move(fullHistory[i])
         }
-
         setStartingFen(chess.fen())
         setHistory(fullHistory)
-
-      } catch (err: any) {
-        console.error(err)
-        setError(err.message || 'Failed to fetch puzzle')
-      } finally {
-        setLoading(false)
-      }
     }
 
     fetchPuzzle()
   }, [])
 
-  return { startingFen, history, solutionMoves, loading, error, rating, puzzleId }
+  return { startingFen, history, solutionMoves, loading, rating, puzzleId }
 }
 

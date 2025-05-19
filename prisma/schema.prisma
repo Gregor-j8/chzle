@@ -14,107 +14,107 @@ datasource db {
 }
 
 model User {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   clerk_id   String   
-  username String @unique
-  fullName String
-  email      String   @unique
+  username   String    @unique
+  fullName   String
+  email      String    @unique
   password   String?
-  rating     Int      @default(1200)
-  createdAt  DateTime @default(now())
-  postId String[]
-  post   Post[]
-  userPuzzles userPuzzle[]
-  likes       Likes[]
-  comments    comments[]
-  messages    Message[] 
-  chatrooms Chatroom[]  @relation("ChatroomMembers")
-  following   Follow[] @relation("UserFollowers") 
-  followers   Follow[] @relation("UserFollowing")
+  rating     Int       @default(1200)
+  createdAt  DateTime  @default(now())
+  postId     String[]
+  post       Post[]    
+  userPuzzles userPuzzle[] 
+  likes      Likes[]  
+  comments   comments[] 
+  messages   Message[] 
+  chatrooms  Chatroom[]  @relation("ChatroomMembers")
+  following  Follow[] @relation("UserFollowing")
+  followers  Follow[] @relation("UserFollowers")
 }
 
 model Game {
   id        String   @id @default(cuid())
   whiteid   String
   blackid   String
-  pgn     String
-  result String
-  fen String
+  pgn       String
+  result    String
+  fen       String
   createdAt DateTime @default(now())
-  post Post[]
+  post      Post[]
 }
 
 model Post {
-id String @id @default(cuid())
-userid String
-user   User   @relation(fields: [userid], references: [id])
-header String
-description String 
-createdat DateTime @default(now())
-gameId String? @unique
-game   Game?   @relation(fields: [gameId], references: [id])
-comments comments[]
-likes Likes[]
+  id          String     @id @default(cuid())
+  userid      String
+  user        User       @relation(fields: [userid], references: [id], onDelete: Cascade)
+  header      String
+  description String 
+  createdat   DateTime   @default(now())
+  gameId      String?    @unique
+  game        Game?      @relation(fields: [gameId], references: [id])
+  comments    comments[]
+  likes       Likes[]
 }
 
 model Follow {
-  id String @id @default(cuid())
-  followerId   String
-  followingId  String
-  follower     User   @relation("UserFollowers", fields: [followerId], references: [id], map: "Follow_followerId_fkey")
-  following    User   @relation("UserFollowing", fields: [followingId], references: [id], map: "Follow_followingId_fkey")
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  follower    User     @relation("UserFollowers", fields: [followerId], references: [id], map: "Follow_followerId_fkey", onDelete: Cascade)
+  following   User     @relation("UserFollowing", fields: [followingId], references: [id], map: "Follow_followingId_fkey", onDelete: Cascade)
 }
 
 model comments {
-  id String @id @default(cuid())
-  postId String
-  post   Post   @relation(fields: [postId], references: [id])
-  userid String
-  user   User   @relation(fields: [userid], references: [id])
+  id          String   @id @default(cuid())
+  postId      String
+  post        Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userid      String
+  user        User     @relation(fields: [userid], references: [id], onDelete: Cascade)
   description String
-  createdAt DateTime @default(now())
+  createdAt   DateTime @default(now())
 }
+
 model Likes {
-  id String @id @default(cuid())
-  postId String
-  post   Post   @relation(fields: [postId], references: [id])
-  userid String
-  user   User   @relation(fields: [userid], references: [id])
+  id      String @id @default(cuid())
+  postId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userid  String
+  user    User   @relation(fields: [userid], references: [id], onDelete: Cascade)
   @@unique([postId, userid])
 }
 
 model userPuzzle {
-  id     String @id @default(cuid())
-  userId String 
-  user   User   @relation(fields: [userId], references: [id])
-  puzzleid String @unique
-  puzzle   Puzzle   @relation(fields: [puzzleid], references: [id], map: "userPuzzle_userId_puzzleId_fkey")
-  issolved Boolean
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  puzzleid      String   @unique
+  puzzle        Puzzle   @relation(fields: [puzzleid], references: [id], map: "userPuzzle_userId_puzzleId_fkey")
+  issolved      Boolean
   completedDate DateTime @default(now())
 }
 
 model Puzzle {
-  id String @id
-  fen String
-  moves String
-  puzzlerating Int
+  id             String       @id
+  fen            String
+  moves          String
+  puzzlerating   Int
   ratingdeviation Int
-  Population Int
-  numberplayed Int
-  theme String
-  GameUrl String
-  openingTags String? 
-  userPuzzles  userPuzzle[]
+  Population     Int
+  numberplayed   Int
+  theme          String
+  GameUrl        String
+  openingTags    String? 
+  userPuzzles    userPuzzle[]
 }
 
 model DailyPuzzle {
-  id String @id @default(cuid())
-  puzzleId String
-  userId String
-  rating Int
+  id            String   @id @default(cuid())
+  puzzleId      String
+  userId        String
+  rating        Int
   completedDate String
 }
-
 
 model Chatroom {
   id        String     @id @default(cuid())
@@ -127,7 +127,7 @@ model Chatroom {
 model Message {
   id         String    @id @default(cuid())
   text       String
-  sender     User      @relation(fields: [senderId], references: [id])
+  sender     User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
   senderId   String
   chatroom   Chatroom  @relation(fields: [chatroomId], references: [id])
   chatroomId String

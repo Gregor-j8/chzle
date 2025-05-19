@@ -35,7 +35,7 @@ const { data, isLoading } = trpc.followRouter.getAllFollowers.useQuery(
               <div className="space-y-2">
                 {data?.map((follower) => (
                     <div key={follower.id} className="flex pl-5 border rounded">
-                        <Image src={user?.imageUrl} alt={`${follower.follower.username}'s profile`}
+                        <Image src={user?.imageUrl || "/default-profile.png"} alt={`${follower.follower.username}'s profile`}
                         width={32} height={32} className="w-8 h-8 rounded-full object-cover"/>
                         <span className="text-black pl-4">
                             <Link href={`/profile/${follower.follower.username}`}>{follower.follower.username}</Link>
