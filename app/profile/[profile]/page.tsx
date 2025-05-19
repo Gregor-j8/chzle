@@ -32,8 +32,8 @@ export default function ProfilePage() {
           <p className="text-lg text-gray-400">Rating: {user.rating}</p>
           <FollowBtn userId={user.id}/>
           <div className='flex justify-around'>
-            <Follower />
-            <Following />
+            <Follower userId={user.id}/>
+            <Following userId={user.id}/>
           </div>
 
           <Link href="/" className="text-blue-400 hover:underline">Back to Home</Link>

@@ -36,5 +36,21 @@ export const followRouter = router({
           ]}
         })
     }),
+    getAllFollowers: protectedProcedure
+    .input(z.object({ followerId: z.string()}))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.follow.findMany({
+        include: { follower: true },
+        where: { followerId: input.followerId }
+        })
+    }),
+    getAllFollowing: protectedProcedure
+    .input(z.object({ followingId: z.string()}))
+    .query(async ({ ctx, input }) => {
+      return ctx.prisma.follow.findMany({
+        include: { following: true },
+        where: { followingId: input.followingId }
+        })
+    }),
 })
 
