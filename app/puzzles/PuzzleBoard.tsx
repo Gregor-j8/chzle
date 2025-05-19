@@ -4,7 +4,7 @@ import { Chessboard } from "react-chessboard";
 interface Props {
   game: Chess
   gameStatus: string
-  onDrop: (source: string, target: string) => void
+  onDrop: (source: string, target: string) => boolean
   onNextPuzzle: () => void
 }
 
@@ -17,7 +17,7 @@ export const PuzzleBoard = ({ game, gameStatus, onDrop, onNextPuzzle }: Props) =
         <Chessboard
           arePremovesAllowed={true}
           position={game.fen()}
-          onPieceDrop={onDrop}
+          onPieceDrop={(sourceSquare, targetSquare) => onDrop(sourceSquare, targetSquare)}
           boardWidth={650}
         />
       </div>

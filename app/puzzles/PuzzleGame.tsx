@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useCallback } from "react"
 import { Chess, Square } from "chess.js"
-import { Puzzle } from "@/types"
+import { Puzzle } from "@/types/global"
 import { toast } from "react-hot-toast"
 import { useUser } from "@clerk/nextjs"
 import { trpc } from "@/utils/trpc"

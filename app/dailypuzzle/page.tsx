@@ -4,7 +4,7 @@ import usePuzzle from './UsePuzzle'
 import { LoadingPage } from '../_components/loading'
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { Chess, Square } from "chess.js"
+import { Chess, Move, Square } from "chess.js"
 import { trpc } from "@/utils/trpc"
 import { useUser } from "@clerk/nextjs"
 
@@ -40,7 +40,7 @@ export default function Page() {
     if (!startingFen || !solutionMoves) return
 
     const newGame = new Chess(startingFen)
-    const allMoves = solutionMoves.map(m => typeof m === "string" && m)
+    const allMoves = solutionMoves.filter((m) => typeof m === "string")
 
     const userColor = newGame.turn()
     setPlayerColor(userColor)
@@ -54,61 +54,64 @@ export default function Page() {
     setGameStatus(game.turn() === "w" ? "White's turn" : "Black's turn")
   }, [game])
 
-  const onDrop = useCallback((source: string, target: string) => {
-    if (game.turn() !== playerColor) {
-      toast.error("It is not your turn", { duration: 3000, position: "top-center" })
-      return false
-    }
-  
-    const piece = game.get(source as Square)
-    if (!piece || piece.color !== playerColor) {
-      toast.error("You can only move your pieces", { duration: 3000, position: "top-center" })
-      return false
-    }
-  
-    const attemptedMove = source + target
-    const expectedMove = moves[0]
-  
-    if (attemptedMove !== expectedMove) {
-      toast.error("That's not the correct move for this puzzle", { duration: 3000, position: "top-center" })
-      return false
-    }
-  
-    const gameCopy = new Chess(game.fen())
-    const move = gameCopy.move({ from: source, to: target })
-  
-    if (!move) {
-      toast.error("Illegal move", { duration: 3000, position: "top-center" })
-      return false
-    }
-  
-    const updatedMoves = moves.slice(1)
-    setOldMoves(prevOldMoves => [...prevOldMoves, attemptedMove])
-    setMoves(updatedMoves)
-    setGame(gameCopy)
-  
-    if (updatedMoves.length === 0) {
-      if (!user.user) return     
-            mutation.mutate({
-                userId: user.user.id,
-                puzzleId: puzzleId,
-                rating: rating,
-                completedDate: new Date().toISOString().slice(0, 10)
-            });
-      toast.success("Puzzle completed!", { duration: 3000, position: "top-center" })
-      return true
-    }
-  
-    setTimeout(() => {
-      const nextAiMove = makeAIMove(gameCopy, updatedMoves)
-      if (nextAiMove) {
-        setGame(nextAiMove.gameCopy)
-        setMoves(nextAiMove.Moves)
-        setOldMoves(prev => [...prev, nextAiMove.playedMove])
+  const onDrop = useCallback(
+    (sourceSquare: Square, targetSquare: Square) => {
+      if (game.turn() !== playerColor) {
+        toast.error("It is not your turn", { duration: 3000, position: "top-center" });
+        return false;
       }
-    }, 500)
-    return true
-  }, [game, moves, playerColor, makeAIMove])
+
+      const pieceObj = game.get(sourceSquare);
+      if (!pieceObj || pieceObj.color !== playerColor) {
+        toast.error("You can only move your pieces", { duration: 3000, position: "top-center" });
+        return false;
+      }
+
+      const attemptedMove = sourceSquare + targetSquare;
+      const expectedMove = moves[0];
+
+      if (attemptedMove !== expectedMove) {
+        toast.error("That's not the correct move for this puzzle", { duration: 3000, position: "top-center" });
+        return false;
+      }
+
+      const gameCopy = new Chess(game.fen());
+      const move = gameCopy.move({ from: sourceSquare, to: targetSquare });
+
+      if (!move) {
+        toast.error("Illegal move", { duration: 3000, position: "top-center" });
+        return false;
+      }
+
+      const updatedMoves = moves.slice(1);
+      setOldMoves((prevOldMoves) => [...prevOldMoves, attemptedMove]);
+      setMoves(updatedMoves);
+      setGame(gameCopy);
+
+      if (updatedMoves.length === 0) {
+        if (!user.user) return false;
+        mutation.mutate({
+          userId: user.user.id,
+          puzzleId: puzzleId,
+          rating: rating,
+          completedDate: new Date().toISOString().slice(0, 10),
+        });
+        toast.success("Puzzle completed!", { duration: 3000, position: "top-center" });
+        return true;
+      }
+
+      setTimeout(() => {
+        const nextAiMove = makeAIMove(gameCopy, updatedMoves);
+        if (nextAiMove) {
+          setGame(nextAiMove.gameCopy);
+          setMoves(nextAiMove.Moves);
+          setOldMoves((prev) => [...prev, nextAiMove.playedMove]);
+        }
+      }, 500);
+      return true;
+    },
+    [game, moves, playerColor, makeAIMove]
+  );
   
   if (loading) {
     return <LoadingPage />

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   if (!globalThis.io) {
     console.log('[socket.io] Initializing server...')
 
-    const io = new IOServer((req).socket?.server, {
+    const io = new IOServer((req as any).socket?.server, {
       path: '/api/socket',
       addTrailingSlash: false,
     });
