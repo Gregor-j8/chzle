@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "dev:ws": "tsx server/ws-server.ts",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "seed": "node --loader ts-node/esm prisma/seed.ts"
