@@ -8,6 +8,9 @@ import PuzzleSlideshow from './Puzzle'
 import GameSlideshow from './Game'
 import ReplayModal from '@/app/_components/replayModal'
 import Link from 'next/link'
+import FollowBtn from './FollowBtn'
+import Follower from '@/app/_components/Followers'
+import Following from '@/app/_components/Following'
 
 export default function ProfilePage() {
   const { profile } = useParams();
@@ -27,6 +30,12 @@ export default function ProfilePage() {
         <div className="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-md text-center mb-6">
           <h1 className="text-3xl font-bold">{user.username}</h1>
           <p className="text-lg text-gray-400">Rating: {user.rating}</p>
+          <FollowBtn userId={user.id}/>
+          <div className='flex justify-around'>
+            <Follower />
+            <Following />
+          </div>
+
           <Link href="/" className="text-blue-400 hover:underline">Back to Home</Link>
         </div>
 

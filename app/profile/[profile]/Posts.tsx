@@ -13,11 +13,9 @@ export default function PostSlideshow({ userId }: { userId: string }) {
     skip,
     take,
   })
-
   const handleNext = () => {
     if (posts.length === take) setPage((prev) => prev + 1)
   }
-
   const handlePrev = () => {
     if (page > 0) setPage((prev) => prev - 1)
   }

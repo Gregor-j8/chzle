@@ -9,7 +9,7 @@ export const chatRouter = router({
         where: { chatroomId: input.chatroomId },
         include: { sender: true },
         orderBy: { createdAt: 'asc' },
-      });
+      })
     }),
 
   sendMessage: protectedProcedure
@@ -25,7 +25,7 @@ export const chatRouter = router({
           senderId: ctx.auth.userId,
         },
         include: { sender: true },
-      });
+      })
     }),
 
   getUserChatrooms: protectedProcedure.query(async ({ ctx }) => {

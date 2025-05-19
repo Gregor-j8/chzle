@@ -29,7 +29,8 @@ model User {
   comments    comments[]
   messages    Message[] 
   chatrooms Chatroom[]  @relation("ChatroomMembers")
-
+  following   Follow[] @relation("UserFollowers") 
+  followers   Follow[] @relation("UserFollowing")
 }
 
 model Game {
@@ -54,6 +55,14 @@ gameId String? @unique
 game   Game?   @relation(fields: [gameId], references: [id])
 comments comments[]
 likes Likes[]
+}
+
+model Follow {
+  id String @id @default(cuid())
+  followerId   String
+  followingId  String
+  follower     User   @relation("UserFollowers", fields: [followerId], references: [id], map: "Follow_followerId_fkey")
+  following    User   @relation("UserFollowing", fields: [followingId], references: [id], map: "Follow_followingId_fkey")
 }
 
 model comments {

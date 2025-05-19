@@ -50,8 +50,7 @@ export default function GamePage() {
       }, 500)
     }, [aiLevel])
 
-  const updateStatus = useCallback(
-    (game: Chess) => {
+  const updateStatus = useCallback((game: Chess) => {
       if (game.isCheckmate()) {
         const winner = game.turn() === "w" ? "Black" : "White"
         const res = game.turn() === "w" ? "0-1" : "1-0"
@@ -67,8 +66,7 @@ export default function GamePage() {
       }
     }, [playerColor])
 
-  const handleDrop = useCallback(
-    (source: Square, target: Square) => {
+  const handleDrop = useCallback((source: Square, target: Square) => {
       if (!chess || !isPlayerTurn) {
         toast.error("Not your turn!")
         return false
