@@ -16,7 +16,7 @@ export default function UsePuzzle(): PuzzleData {
   const [startingFen, setStartingFen] = useState<string>('')
   const [history, setHistory] = useState<Move[]>([])
   const [solutionMoves, setSolutionMoves] = useState<Move[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, ] = useState(true)
   const [puzzleId, setPuzzleId] = useState<string>('')
   const [rating, setRating] = useState<number>(0)
 
