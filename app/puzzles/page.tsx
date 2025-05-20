@@ -6,11 +6,14 @@ import { useState } from "react"
 import { LoadingPage } from "../_components/loading"
 import type { Puzzle } from "@/types/global"
 
-export default function Puzzles() {
+export default function Puzzles () {
   const { data, isLoading, refetch } = trpc.puzzle.getPuzzles.useQuery(undefined, {
     refetchOnWindowFocus: false,
-    staleTime: 1000 * 60 * 60,
+    staleTime: 5 * 60 * 1000,
+    suspense: true
   })
+  console.log("data", data)
+
   const puzzles = (data ?? []) as Puzzle[]
   const [puzzleIndex, setPuzzleIndex] = useState(0)
   const {game, gameStatus, onDrop: originalOnDrop} = usePuzzleGame(puzzles as Puzzle[] | undefined, puzzleIndex)

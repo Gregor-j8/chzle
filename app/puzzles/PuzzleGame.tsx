@@ -35,10 +35,10 @@ export const usePuzzleGame = (puzzles: Puzzle[] | undefined, puzzleIndex: number
 
     useEffect(() => {
         if (!puzzles) return
-        
+        console.log(puzzles)
         const puzzle = puzzles[puzzleIndex];
-        const newGame = new Chess(puzzle.fen);
-        const allMoves = puzzle.moves.trim().split(" ")
+        const newGame = new Chess(puzzle?.fen);
+        const allMoves = puzzle?.moves.trim().split(" ")
 
         const aiColor = newGame.turn()
         setPlayerColor(aiColor === "w" ? "b" : "w")
@@ -72,7 +72,7 @@ export const usePuzzleGame = (puzzles: Puzzle[] | undefined, puzzleIndex: number
         toast.success("congrats you solved this puzzle")
          setOldMoves([])
         }
-    }, [moves, oldMoves, user])
+    }, [moves, oldMoves, user, mutation, puzzles])
 
     const onDrop = useCallback((source: string, target: string) => {
         if (game.turn() !== playerColor) {
