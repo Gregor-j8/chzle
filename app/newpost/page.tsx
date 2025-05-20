@@ -1,4 +1,5 @@
 'use client'
+import { useRouter } from 'next/navigation'
 import { trpc } from '@/utils/trpc'
 import { useUser } from '@clerk/nextjs'
 import Link from 'next/link'
@@ -6,16 +7,17 @@ import {useState} from 'react'
 import toast from 'react-hot-toast'
 
 interface newpost {
-  userid: string;
-  header: string;
-  description: string;
-  gameId?: string;
+  userid: string
+  header: string
+  description: string
+  gameId?: string
 }
 
 export default function NewPost() {
   const { mutate } = trpc.userPostsRouter.CreatePosts.useMutation()
   const {user} = useUser()
   const [Post, setPost] = useState({title: '', description: ''})
+  const router = useRouter()
 
   if (!user){
     return null
@@ -36,6 +38,8 @@ export default function NewPost() {
         gameId: undefined
       }
       mutate(newpost)
+      router.push('/')
+
   }
 
     return (

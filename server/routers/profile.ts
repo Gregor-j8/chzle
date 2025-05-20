@@ -1,5 +1,4 @@
 import { z } from 'zod'
-import { createId } from '@paralleldrive/cuid2'
 import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
 import { clerkClient } from '@clerk/nextjs/server'
@@ -17,7 +16,7 @@ export const ProfileRouter = router({
   .mutation(async ({ ctx, input }) => {
     return ctx.prisma.user.create({
       data: {
-        id: createId(),
+        id: input.clerkId,
         clerk_id: input.clerkId,
         username: input.username,
         email: input.email,
@@ -28,7 +27,7 @@ export const ProfileRouter = router({
     })
   }),
 
-      findUser: protectedProcedure
+    findUser: protectedProcedure
     .input(z.object({ clerk_id: z.string()}))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.user.findFirst({
