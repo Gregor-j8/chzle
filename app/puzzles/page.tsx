@@ -12,7 +12,6 @@ export default function Puzzles () {
     staleTime: 5 * 60 * 1000,
     suspense: true
   })
-  console.log("data", data)
 
   const puzzles = (data ?? []) as Puzzle[]
   const [puzzleIndex, setPuzzleIndex] = useState(0)
@@ -34,8 +33,6 @@ export default function Puzzles () {
       setPuzzleIndex(next)
     }
   }
-
-  if (isLoading || !puzzles) return <div className="text-center py-8"><LoadingPage /></div>
 
   return (
     <PuzzleBoard
