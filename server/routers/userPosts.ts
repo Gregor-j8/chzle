@@ -25,6 +25,12 @@ export const userPosts = router({
       })
       return post
     }),
+    deletePost: protectedProcedure.input(z.object({ id: z.string() })) 
+    .mutation(async ({ ctx, input }) => {
+    await ctx.prisma.post.delete({
+    where: { id: input.id }})
+    return { success: true }
+    }),
     filterPosts: publicProcedure.input(z.string().cuid())
     .query(async ({ctx, input}) => {
         if (!input.trim()) return;

@@ -2,7 +2,7 @@
 import { HandThumbUpIcon, HandThumbUpIcon as HandThumbUpOutlineIcon } from '@heroicons/react/24/outline'
 import { MessageCircle, Trash2, Pencil } from "lucide-react"
 import { trpc } from '@/utils/trpc'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { LoadingSpinner } from '../_components/loading'
 import { useState } from "react"
 import { useUser } from "@clerk/clerk-react"
@@ -16,12 +16,14 @@ const utils = trpc.useUtils()
   const updateMutation = trpc.userPostsRouter.UpdateComment.useMutation()
   const createLike = trpc.userPostsRouter.CreateLikes.useMutation()
   const DeleteLike = trpc.userPostsRouter.DeleteLike.useMutation()
+  const DeletePost = trpc.userPostsRouter.deletePost.useMutation()
   const {user} = useUser()
   const [showCommentBox, setShowCommentBox] = useState(false)
   const [showEditBox, setShowEditBox] = useState(false)
   const [editComment, setEditComment] = useState({description: '', id: ''})
   const [comment, setComment] = useState("")
   const { id } = useParams()
+  const router = useRouter()
 
   if (id === undefined) return null
   const [data] = trpc.userPostsRouter.getPostDetails.useSuspenseQuery(id.toString())
@@ -85,6 +87,12 @@ const handleCommentSubmit = () => {
             await utils.userPostsRouter.getPostDetails.refetch(postId)
         }})}}
 
+        const handleDelete = (id: string) => {
+          
+          DeletePost.mutate({id}) 
+            router.push("/")
+          }
+
   return (
 <div className="m-4 w-[60%] mx-auto flex flex-col  rounded-2xl border border-slate-700 bg-gray-800 p-6 shadow-md">
   <h1 className="text-2xl font-bold text-white">{data.header}</h1>
@@ -103,6 +111,12 @@ const handleCommentSubmit = () => {
     </div>
     <span className="font-medium cursor-pointer"><Link href={`/profile/${data.user.username}`}>Posted by {data.user.username}</Link></span>
     <span className="font-medium">Posted on {new Date(data.createdat).toLocaleDateString()}</span>
+        {data.userid == user?.id && (
+          <div>
+            <button className='text-red' onClick={() => {handleDelete(data.id)}}><Trash2 size={24} /></button>
+            <button className='text-red'><Pencil size={24} /></button>            
+          </div>
+        )} 
   </div>
   <div className="mt-6 space-y-4">
     {data.comments.map(comment => (
@@ -111,7 +125,7 @@ const handleCommentSubmit = () => {
           <span className="font-semibold">{comment.user.username}</span>
           <span className="text-xs">
             {new Date(comment.createdAt).toLocaleDateString()}
-          </span>
+          </span>        
         </div>
         <p className="text-slate-200 text-sm mb-2">{comment.description}</p>
 
