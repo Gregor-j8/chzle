@@ -31,6 +31,21 @@ export const userPosts = router({
     where: { id: input.id }})
     return { success: true }
     }),
+
+    UpdatePost: protectedProcedure.input(
+    z.object({
+    id: z.string(),
+    header: z.string(),
+    description: z.string(),
+    })).mutation(async ({ctx, input}) => {
+    const { header, description, } = input
+    const post = await ctx.prisma.post.update({
+    where: { id: input.id },
+    data: { userid: ctx.auth.userId, header, description, createdat: new Date() }
+    })
+      return post
+    }),
+
     filterPosts: publicProcedure.input(z.string().cuid())
     .query(async ({ctx, input}) => {
         if (!input.trim()) return;
@@ -47,6 +62,7 @@ export const userPosts = router({
             take: 20
         })
     }),
+
     getPostDetails: protectedProcedure.input(z.string().min(1))
     .query(async ({ctx, input}) => {
         if (!input.trim()) return 

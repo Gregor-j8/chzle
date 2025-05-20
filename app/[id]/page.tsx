@@ -1,4 +1,5 @@
 'use client'
+import EditPostForm from './EditPostForm'
 import { HandThumbUpIcon, HandThumbUpIcon as HandThumbUpOutlineIcon } from '@heroicons/react/24/outline'
 import { MessageCircle, Trash2, Pencil } from "lucide-react"
 import { trpc } from '@/utils/trpc'
@@ -18,6 +19,7 @@ const utils = trpc.useUtils()
   const DeleteLike = trpc.userPostsRouter.DeleteLike.useMutation()
   const DeletePost = trpc.userPostsRouter.deletePost.useMutation()
   const {user} = useUser()
+  const [showEditPostBox, setShowEditPostBox] = useState(false)
   const [showCommentBox, setShowCommentBox] = useState(false)
   const [showEditBox, setShowEditBox] = useState(false)
   const [editComment, setEditComment] = useState({description: '', id: ''})
@@ -88,7 +90,6 @@ const handleCommentSubmit = () => {
         }})}}
 
         const handleDelete = (id: string) => {
-          
           DeletePost.mutate({id}) 
             router.push("/")
           }
@@ -113,9 +114,9 @@ const handleCommentSubmit = () => {
     <span className="font-medium">Posted on {new Date(data.createdat).toLocaleDateString()}</span>
         {data.userid == user?.id && (
           <div>
-            <button className='text-red' onClick={() => {handleDelete(data.id)}}><Trash2 size={24} /></button>
-            <button className='text-red'><Pencil size={24} /></button>            
-          </div>
+            <button onClick={() => {handleDelete(data.id)}}><Trash2 size={24} /></button>
+            <button onClick={() => setShowEditPostBox(true)}><Pencil size={24} /></button>
+            </div>
         )} 
   </div>
   <div className="mt-6 space-y-4">
@@ -160,6 +161,18 @@ const handleCommentSubmit = () => {
               className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white">Update Comment
             </button>
           </div>
+        )}
+          {showEditPostBox && (
+          <EditPostForm
+            postId={data.id}
+            initialHeader={data.header}
+            initialDescription={data.description}
+            onSuccess={async () => {
+              await utils.userPostsRouter.getPostDetails.refetch(id.toString())
+              setShowEditPostBox(false)
+            }}
+            onCancel={() => setShowEditPostBox(false)}
+          />
         )}
       </div>
   )
