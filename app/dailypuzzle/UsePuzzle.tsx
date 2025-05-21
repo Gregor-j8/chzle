@@ -41,7 +41,6 @@ export default function UsePuzzle(): PuzzleData {
         setStartingFen(chess.fen())
         setHistory(fullHistory)
     }
-
     fetchPuzzle()
   }, [])
 

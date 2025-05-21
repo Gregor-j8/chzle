@@ -4,7 +4,7 @@ import usePuzzle from './UsePuzzle'
 import { LoadingPage } from '../_components/loading'
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { Chess, Move, Square } from "chess.js"
+import { Chess, Square } from "chess.js"
 import { trpc } from "@/utils/trpc"
 import { useUser } from "@clerk/nextjs"
 
@@ -110,12 +110,9 @@ export default function Page() {
       }, 500);
       return true;
     },
-    [game, moves, playerColor, makeAIMove]
+    [game, moves, playerColor, makeAIMove, mutation, puzzleId, rating, user.user]
   );
   
-  if (loading) {
-    return <LoadingPage />
-  }
 
   if (!startingFen || !history) {
     return <div className="text-red-600">Failed to load puzzle.</div>
