@@ -30,6 +30,7 @@
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.510.0",
     "next": "15.3.0",
+    "posthog-js": "^1.245.1",
     "prisma": "^6.6.0",
     "react": "^19.0.0",
     "react-chessboard": "^4.7.3",

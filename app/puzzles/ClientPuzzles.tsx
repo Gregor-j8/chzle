@@ -11,7 +11,6 @@ function PuzzlesContent() {
     refetchOnWindowFocus: false,
     staleTime: 5 * 60 * 1000,
     suspense: true,
-    
   })
 
   const puzzles = (data ?? []) as Puzzle[]
