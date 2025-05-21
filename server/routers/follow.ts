@@ -40,7 +40,7 @@ export const followRouter = router({
     .input(z.object({ followerId: z.string()}))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.follow.findMany({
-        include: { follower: true },
+        include: { follower: true, following: true },
         where: { followerId: input.followerId }
         })
     }),
@@ -48,7 +48,7 @@ export const followRouter = router({
     .input(z.object({ followingId: z.string()}))
     .query(async ({ ctx, input }) => {
       return ctx.prisma.follow.findMany({
-        include: { following: true },
+        include: { follower: true, following: true },
         where: { followingId: input.followingId }
         })
     }),

@@ -37,10 +37,10 @@ const {user} = useUser()
               <div className="space-y-2">
                 {data?.map((follower) => (
                   <div key={follower.id} className="flex p-2 border rounded">
-                        <Image src={user?.imageUrl || "/default-profile.png"} alt={`${follower.following.username}'s profile`}
+                        <Image src={user?.imageUrl || "/default-profile.png"} alt={`${follower.follower.username}'s profile`}
                         width={32} height={32} className="w-8 h-8 rounded-full object-cover"/>
                         <span className="text-black">
-                            <Link href={`/profile/${follower.following.username}`}>{follower.following.username}</Link>
+                            <Link href={`/profile/${follower.follower.username}`}>{follower.follower.username}</Link>
                         </span>
                   </div>
                 ))}
