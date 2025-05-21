@@ -1,9 +1,8 @@
 import { router, protectedProcedure } from "../trpc";
 import { z } from 'zod'
 
-
 export const puzzleRouter = router({
-  getPuzzles: protectedProcedure.query(async ({ ctx }) => {
+  getPuzzles: protectedProcedure.input(z.object({}).optional()).query(async ({ ctx }) => {
     return await ctx.prisma.$queryRaw`
     SELECT * FROM "Puzzle"
     ORDER BY RANDOM()

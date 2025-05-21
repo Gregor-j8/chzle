@@ -35,7 +35,6 @@ export const usePuzzleGame = (puzzles: Puzzle[] | undefined, puzzleIndex: number
 
     useEffect(() => {
         if (!puzzles) return
-        console.log(puzzles)
         const puzzle = puzzles[puzzleIndex];
         const newGame = new Chess(puzzle?.fen);
         const allMoves = puzzle?.moves.trim().split(" ")
