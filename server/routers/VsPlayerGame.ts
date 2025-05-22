@@ -1,6 +1,5 @@
 import { z } from 'zod'
 import { router, publicProcedure } from '../trpc'
-import { prisma } from '@/server/prisma';
 
 export const gameRouter = router({
   createGame: publicProcedure
@@ -26,16 +25,16 @@ export const gameRouter = router({
       return game
     }),
 
-addMove: publicProcedure
-  .input(z.object({ gameId: z.string(), move: z.string() }))
-  .mutation(async ({ input, ctx }) => {
-    const move = await ctx.prisma.moves.create({
-      data: {
-        game_id: input.gameId,
-        move: input.move,
-      },
-    });
-    return move;
-  })
+// addMove: publicProcedure
+//   .input(z.object({ gameId: z.string(), move: z.string() }))
+//   .mutation(async ({ input, ctx }) => {
+//     const move = await ctx.prisma.moves.create({
+//       data: {
+//         game_id: input.gameId,
+//         move: input.move,
+//       },
+//     });
+//     return move;
+//   })
 
 });

@@ -15,7 +15,6 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
   const [game, setGame] = useState(new Chess());
 
   useEffect(() => {
-    // Subscribe to new moves on this game
     const channel = supabase
       .channel(`room_moves_${roomId}`)
       .on(
@@ -37,7 +36,7 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
     };
   }, [roomId]);
 
-  const onDrop = async (sourceSquare: string, targetSquare: string) => {
+  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
     const move = { from: sourceSquare, to: targetSquare, promotion: 'q' };
     const gameCopy = new Chess(game.fen());
     const result = gameCopy.move(move);
@@ -45,16 +44,20 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
     if (result) {
       setGame(gameCopy);
 
-      const moveNotation = result.san; // Standard Algebraic Notation
-      const { error } = await supabase.from('moves').insert([{ gameId: roomId, moveNotation: moveNotation }]);
+      const moveNotation = result.san;
+      supabase.from('moves').insert([{ gameId: roomId, moveNotation: moveNotation }])
+        .then(({ error }) => {
+          if (error) {
+            console.error('Error inserting move:', error);
+          }
+        });
 
-      if (error) {
-        console.error('Error inserting move:', error);
-      }
+      return true;
     }
-  };
+    return false;
+  }
 
   return <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={300} />
-};
+}
 
 export default ChessGame;
