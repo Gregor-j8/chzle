@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { trpc } from '@/utils/trpc'
-import socket from '@/utils/socket'
+import socket from '@/utils/supabaseClient'
 
 export default function Chat() {
   const [selectedRoom, setSelectedRoom] = useState<string | null>(null)

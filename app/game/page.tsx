@@ -11,12 +11,12 @@ export default function NewGame() {
                     <Link href={"/vscomputer"} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded cursor-pointer">
                     Vs Computer
                     </Link>
-                    <Link href={"/"} className="bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 rounded cursor-pointer">
+                    <Link href={"/vsplayer"} className="bg-gray-500 hover:bg-gray-600 text-white font-bold px-4 rounded cursor-pointer">
                     Vs Player
                     </Link>
                 </div>
             </section>
 
         </div>
-    );
+    )
 }
