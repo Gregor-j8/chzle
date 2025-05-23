@@ -13,13 +13,13 @@ type Move = {
 }
 
 const ChessGame = ({ roomId }: { roomId: string }) => {
-  const {user} = useUser()
+  const { user } = useUser()
   const [game, setGame] = useState(new Chess())
   const [playerColor, setPlayerColor] = useState<'white' | 'black' | null>(null)
+  const [bothPlayersJoined, setBothPlayersJoined] = useState(false)
 
   useEffect(() => {
-    if (!user) return;
-
+    if (!user) return
     const joinGame = async () => {
       const { data: existingGame, error } = await supabase
         .from('games')
@@ -27,40 +27,37 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
         .eq('id', roomId)
         .single()
 
-      if (error) {
-        // If game doesn't exist, create new game with current user as white
-        const { data: newGame, error: createError } = await supabase
+      if (error || !existingGame) {
+        const { error: insertError } = await supabase
           .from('games')
-          .insert([{ id: roomId, player_white: user.id }])
-          .select()
-          .single()
+          .insert({ id: roomId, white_player: user.id })
 
-        if (!createError) {
-          setPlayerColor('white')
-        }
+        if (!insertError) setPlayerColor('white')
         return
       }
 
-      // Assign player to empty slot if available
-      if (existingGame.player_white === null) {
-        await supabase.from('games').update({ player_white: user.id }).eq('id', roomId)
+      const { white_player, black_player } = existingGame
+
+      if (white_player === null) {
+        await supabase.from('games').update({ white_player: user.id }).eq('id', roomId)
         setPlayerColor('white')
-      } else if (existingGame.player_black === null) {
-        await supabase.from('games').update({ player_black: user.id }).eq('id', roomId)
+      } else if (black_player === null) {
+        await supabase.from('games').update({ black_player: user.id }).eq('id', roomId)
         setPlayerColor('black')
-      } else if (
-        existingGame.player_white === user.id ||
-        existingGame.player_black === user.id
-      ) {
-        setPlayerColor(existingGame.player_white === user.id ? 'white' : 'black')
+      } else if (white_player === user.id || black_player === user.id) {
+        setPlayerColor(white_player === user.id ? 'white' : 'black')
       } else {
-        alert('Game is full!')
+        alert('Game is full.')
+        return
+      }
+
+      if (white_player && black_player) {
+        setBothPlayersJoined(true)
       }
     }
-
     joinGame()
   }, [user, roomId])
-  // 3. Subscribe to moves
+
   useEffect(() => {
     const channel = supabase
       .channel(`room_moves_${roomId}`)
@@ -68,10 +65,9 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
         event: 'INSERT',
         schema: 'public',
         table: 'moves',
+        filter: `game_id=eq.${roomId}`
       }, (payload) => {
         const move = payload.new as Move
-        if (move.game_id !== roomId) return
-
         setGame((prevGame) => {
           const newGame = new Chess(prevGame.fen())
           newGame.move(move.move_notation)
@@ -79,15 +75,13 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
         })
       })
       .subscribe()
-
     return () => {
       supabase.removeChannel(channel)
     }
   }, [roomId])
 
-  // 4. Handle piece drop (only allow moves if it's your turn)
-  const onDrop = (sourceSquare: string, targetSquare: string, piece: string) => {
-    if (!playerColor) return false
+  const onDrop = (sourceSquare: string, targetSquare: string) => {
+    if (!playerColor || !bothPlayersJoined) return false
 
     const turn = game.turn()
     if ((turn === 'w' && playerColor !== 'white') || (turn === 'b' && playerColor !== 'black')) {
@@ -100,22 +94,21 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
 
     if (result) {
       setGame(gameCopy)
-      supabase.from('moves').insert([{
-        game_id: roomId,
-        move_notation: result.san
-      }])
+      supabase.from('moves').insert([
+        { game_id: roomId, move_notation: result.san }
+      ])
       return true
     }
-
     return false
   }
 
   if (!playerColor) return <div>Joining game...</div>
+  if (!bothPlayersJoined) return <div>Waiting for opponent...</div>
 
   return (
-    <div>
+    <div className="flex flex-col items-center gap-2">
       <div>You are playing as <strong>{playerColor}</strong></div>
-      <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={300} />
+      <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={350} />
     </div>
   )
 }
