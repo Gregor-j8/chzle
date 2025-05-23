@@ -1,16 +1,10 @@
 'use client'
+import { v4 as uuidv4 } from 'uuid'
 import { useEffect, useState } from 'react'
 import { Chess } from 'chess.js'
 import { Chessboard } from 'react-chessboard'
 import { supabase } from '@/utils/supabaseClient'
 import { useUser } from '@clerk/clerk-react'
-
-type Move = {
-  id: number
-  game_id: string
-  move_notation: string
-  created_at: string
-}
 
 const ChessGame = ({ roomId }: { roomId: string }) => {
   const { user } = useUser()
@@ -56,13 +50,14 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
           event: 'INSERT',
           schema: 'public',
           table: 'moves',
-          filter: `game_id=eq.${roomId}`,
+          filter: `gameId=eq.${roomId}`,
         },
         (payload) => {
-          const move = payload.new as Move
+          const move = payload.new
           setGame((prevGame) => {
             const newGame = new Chess(prevGame.fen())
-            newGame.move(move.move_notation)
+            console.log("newmove", move)
+            newGame.move({ from: move.from, to: move.to, promotion: 'q' })
             return newGame
           })
         }
@@ -73,7 +68,7 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
     }
   }, [roomId])
 
-  const onDrop = (sourceSquare: string, targetSquare: string) => {
+  const onDrop = async(sourceSquare: string, targetSquare: string) => {
     if (!playerColor || !gameReady) return false
 
     const turn = game.turn()
@@ -84,11 +79,10 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
     const move = { from: sourceSquare, to: targetSquare, promotion: 'q' }
     const gameCopy = new Chess(game.fen())
     const result = gameCopy.move(move)
-
     if (result) {
       setGame(gameCopy)
-      supabase.from('moves').insert([
-        { game_id: roomId, move_notation: result.san }
+      const { } = await supabase.from('moves').insert([
+        { id: uuidv4(), gameId: roomId, from: result.from, to: result.to, createdAt: new Date(), player_id: user?.id }
       ])
       return true
     }
