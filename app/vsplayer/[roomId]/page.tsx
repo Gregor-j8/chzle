@@ -1,12 +1,16 @@
-import { v4 as uuidv4 } from 'uuid'
+'use client'
+import { useParams } from 'next/navigation'
 import ChessGame from './chessBoard'
 
 export default function Home() {
-  const roomId = uuidv4()
+  const params = useParams()
+  const roomId = params?.roomId
+
+  if (!roomId) return <div>Invalid Room</div>
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="w-[500px] h-[500px]">
-        <ChessGame roomId={roomId} />
+        <ChessGame roomId={roomId.toString()} />
       </div>
     </div>
   )

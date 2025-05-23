@@ -16,64 +16,57 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
   const { user } = useUser()
   const [game, setGame] = useState(new Chess())
   const [playerColor, setPlayerColor] = useState<'white' | 'black' | null>(null)
-  const [bothPlayersJoined, setBothPlayersJoined] = useState(false)
+  const [gameReady, setGameReady] = useState(false)
 
   useEffect(() => {
     if (!user) return
-    const joinGame = async () => {
-      const { data: existingGame, error } = await supabase
+
+    const loadGame = async () => {
+      const { data: gameData, error } = await supabase
         .from('games')
         .select('*')
         .eq('id', roomId)
         .single()
 
-      if (error || !existingGame) {
-        const { error: insertError } = await supabase
-          .from('games')
-          .insert({ id: roomId, white_player: user.id })
+      if (error || !gameData) return
 
-        if (!insertError) setPlayerColor('white')
-        return
-      }
+      const { white_player, black_player } = gameData
 
-      const { white_player, black_player } = existingGame
-
-      if (white_player === null) {
-        await supabase.from('games').update({ white_player: user.id }).eq('id', roomId)
+      if (!white_player || !black_player) return <div>waiting for opponent.</div>
+      if (user.id === white_player) {
         setPlayerColor('white')
-      } else if (black_player === null) {
-        await supabase.from('games').update({ black_player: user.id }).eq('id', roomId)
+        setGameReady(true)
+      } else if (user.id === black_player) {
         setPlayerColor('black')
-      } else if (white_player === user.id || black_player === user.id) {
-        setPlayerColor(white_player === user.id ? 'white' : 'black')
+        setGameReady(true)
       } else {
-        alert('Game is full.')
-        return
-      }
-
-      if (white_player && black_player) {
-        setBothPlayersJoined(true)
+        return <div>game not available</div>
       }
     }
-    joinGame()
+
+    loadGame()
   }, [user, roomId])
 
   useEffect(() => {
     const channel = supabase
       .channel(`room_moves_${roomId}`)
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'moves',
-        filter: `game_id=eq.${roomId}`
-      }, (payload) => {
-        const move = payload.new as Move
-        setGame((prevGame) => {
-          const newGame = new Chess(prevGame.fen())
-          newGame.move(move.move_notation)
-          return newGame
-        })
-      })
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'moves',
+          filter: `game_id=eq.${roomId}`,
+        },
+        (payload) => {
+          const move = payload.new as Move
+          setGame((prevGame) => {
+            const newGame = new Chess(prevGame.fen())
+            newGame.move(move.move_notation)
+            return newGame
+          })
+        }
+      )
       .subscribe()
     return () => {
       supabase.removeChannel(channel)
@@ -81,7 +74,7 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
   }, [roomId])
 
   const onDrop = (sourceSquare: string, targetSquare: string) => {
-    if (!playerColor || !bothPlayersJoined) return false
+    if (!playerColor || !gameReady) return false
 
     const turn = game.turn()
     if ((turn === 'w' && playerColor !== 'white') || (turn === 'b' && playerColor !== 'black')) {
@@ -102,8 +95,7 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
     return false
   }
 
-  if (!playerColor) return <div>Joining game...</div>
-  if (!bothPlayersJoined) return <div>Waiting for opponent...</div>
+  if (!gameReady) return <div>Loading game...</div>
 
   return (
     <div className="flex flex-col items-center gap-2">

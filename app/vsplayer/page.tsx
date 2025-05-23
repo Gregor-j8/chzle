@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useUser } from '@clerk/clerk-react'
+import toast from 'react-hot-toast'
 
 export default function Lobby() {
   const { user } = useUser()
@@ -13,10 +14,9 @@ export default function Lobby() {
   const handleCreate = async () => {
     if (!user) return router.push('/')
     const roomId = uuidv4()
-    const {} = await supabase
+    await supabase
       .from('games')
-      .insert({ id: roomId, white_player: user.id })
-
+      .insert({ id: roomId, white_player: user.id, black_player: null })
     router.push(`/vsplayer/${roomId}`)
   }
 
@@ -31,9 +31,9 @@ export default function Lobby() {
       .select('*')
       .eq('id', roomId)
       .single()
-
+    
     if (game.white_player && game.black_player && user.id !== game.white_player && user.id !== game.black_player) {
-      alert('Game is full.')
+      toast.error('Game is full.')
       return
     }
 
