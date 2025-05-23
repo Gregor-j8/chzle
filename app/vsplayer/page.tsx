@@ -26,6 +26,7 @@ export default function Lobby() {
       const {} = await supabase
       .from('games')
     .update({ black_player: user.id})
+    .eq('id', roomIdInput.trim())
     }
   }
 
