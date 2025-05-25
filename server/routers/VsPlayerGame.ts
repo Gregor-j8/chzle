@@ -25,16 +25,5 @@ export const gameRouter = router({
       return game
     }),
 
-// addMove: publicProcedure
-//   .input(z.object({ gameId: z.string(), move: z.string() }))
-//   .mutation(async ({ input, ctx }) => {
-//     const move = await ctx.prisma.moves.create({
-//       data: {
-//         game_id: input.gameId,
-//         move: input.move,
-//       },
-//     });
-//     return move;
-//   })
 
 });

@@ -27,8 +27,6 @@
     "@trpc/server": "^11.1.2",
     "chess.js": "^1.0.0",
     "csv-parser": "^3.2.0",
-    "express": "^5.1.0",
-    "http": "^0.0.1-security",
     "js-chess-engine": "^1.0.2",
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.510.0",
