@@ -36,18 +36,20 @@ export default function Posts({ searchText }: { searchText: string }) {
   if (!postsToDisplay) return <div>No Posts Found</div>
 
   return (
-    <div className="h-full overflow-y-auto p-4 hide-scrollbar">
-      {postsToDisplay.map(post => (
-        <div key={post.id} 
-            className="m-4 rounded-2xl border border-slate-700 bg-gray-800 p-4 shadow-md transition hover:shadow-lg">
-            <Link href={`/${post.id}`} className="text-xl font-semibold text-white">{post.header}</Link>
-            <p className="mt-2 text-sm text-slate-300">{post.description}</p>
-            <div className="flex justify-between mt-4 text-xs text-slate-500">
-                <Link href={`/profile/${post.user.username}`} className="font-medium">Posted by {post?.user.username}</Link>
-                <span className="font-medium">Posted on {post.createdat.toLocaleDateString()}</span>
-            </div>
-        </div>
-      ))}
+   <div className="h-full overflow-y-auto p-4 hide-scrollbar">
+  {postsToDisplay.map((post) => (
+    <div key={post.id}
+      className="mb-6 rounded-2xl border border-slate-700 bg-slate-800 p-5 shadow-md transition-all duration-300 hover:shadow-lg hover:border-slate-500">
+      <Link href={`/${post.id}`} className="text-xl sm:text-2xl font-semibold text-white hover:underline">{post.header}</Link>
+      <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed">{post.description}</p>
+      <div className="mt-4 flex flex-col sm:flex-row justify-between text-xs sm:text-sm text-slate-400">
+        <Link href={`/profile/${post.user.username}`} className="font-medium hover:text-white">Posted by {post.user.username}</Link>
+        <span className="mt-1 sm:mt-0 font-medium">
+          {new Date(post.createdat).toLocaleDateString()}
+        </span>
+      </div>
     </div>
+  ))}
+</div>
   )
 }

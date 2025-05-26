@@ -44,7 +44,7 @@ export default function NavBar() {
     return pathname === path
   }
   return (
-    <nav className="w-full flex items-center justify-between p-4 bg-white shadow-sm border-b">
+    <nav className="w-full fixed flex items-center justify-between p-2 bg-white shadow-sm border-b">
       <div className="flex items-center gap-6">
         <Link href="/" className="flex items-center">
           <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-sm font-bold text-white">

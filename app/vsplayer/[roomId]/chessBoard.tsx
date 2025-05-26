@@ -25,7 +25,7 @@ const loadGame = useCallback(async () => {
     .eq('id', roomId)
     .single();
 
-  const { white_player, black_player, fen } = gameData;
+  const { white_player, black_player, fen } = gameData
 
   if (!white_player || !black_player) return;
 
@@ -144,30 +144,31 @@ const loadGame = useCallback(async () => {
       toast.custom(`this game is a draw`)
       await supabase.from('completedGame').insert([{id: uuidv4(),gameId: roomId,createdAt: new Date().toISOString(),result: "tie", fen: game.fen()}])
     }
-const { error } = await supabase.functions.invoke('adding-chess-moves', {
+
+const {} = await supabase.functions.invoke('adding-chess-moves', {
   body: { name: 'Functions' },
 })
-if (error) return console.error(error)
    
 setTimeout(() => {
         router.push("/vsplayer")
     }, 2000)
   }
-
   if (!gameReady) return <div>Game not ready...</div>
-
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div>You are playing as <strong>{playerColor}</strong></div>
-      <div>Turn: <strong>{game.turn() === 'w' ? 'White' : 'Black'}</strong></div>
-      <Chessboard  position={game.fen()} onPieceDrop={onDrop} boardWidth={350} 
-      boardOrientation={playerColor === 'black' ? 'black' : 'white'}/>
-      {game.isGameOver() && (
-        <div className="text-lg font-bold">
-          Game Over! {game.isCheckmate() ? 'Checkmate!' : game.isDraw() ? 'Draw!' : ''}
-        </div>
-      )}
+<div className="flex flex-col items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
+  <div className="text-center space-y-1 text-sm sm:text-base">
+    <p> You are playing as {playerColor}</p>
+    <p>Turn:{game.turn() === 'w' ? 'White' : 'Black'}</p>
+  </div>
+
+  <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={350} boardOrientation={playerColor === 'black' ? 'black' : 'white'}/>
+
+  {game.isGameOver() && (
+    <div className="mt-4 text-center text-lg font-bold text-red-500">
+      Game Over! {game.isCheckmate() ? 'Checkmate!' : game.isDraw() ? 'Draw!' : ''}
     </div>
+  )}
+</div>
   )
 }
 

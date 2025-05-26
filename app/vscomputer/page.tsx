@@ -119,9 +119,9 @@ export default function GamePage() {
   }
 
   return (
-    <div className="h-screen overflow-hidden bg-gray-900">
-      <main className="flex flex-col items-center justify-center h-full py-10 px-4">
-        <h1 className="text-2xl font-bold text-white mb-4">Chess vs Computer</h1>
+    <div className="h-screen overflow-hidden bg-gray-900 mt-[-64]">
+      <main className="flex flex-col items-center justify-center h-full mt-5 p-10 px-4">
+        <h1 className="text-2xl font-bold text-white mb-5">Chess vs Computer</h1>
         <p className="text-lg text-gray-300 mb-4">{status}</p>
         <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
           <Chessboard boardWidth={Math.min(600)} position={chess.fen()} onPieceDrop={handleDrop} arePremovesAllowed boardOrientation={playerColor === "w" ? "white" : "black"}/>

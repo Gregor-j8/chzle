@@ -8,10 +8,10 @@ export default function Home() {
 
   if (!roomId) return <div>Invalid Room</div>
   return (
-    <div className="flex justify-center items-center h-screen">
-      <div className="w-[500px] h-[500px]">
-        <ChessGame roomId={roomId.toString()} />
-      </div>
-    </div>
+<div className="flex justify-center items-center min-h-screen bg-gray-900 px-4">
+  <div className="w-full max-w-[500px] h-[500px] bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-4">
+    <ChessGame roomId={roomId.toString()} />
+  </div>
+</div>
   )
 }

@@ -1,7 +1,6 @@
 "use client"
 import { Chessboard } from "react-chessboard"
 import usePuzzle from './UsePuzzle'
-import { LoadingPage } from '../_components/loading'
 import { useCallback, useEffect, useState } from "react"
 import toast from "react-hot-toast"
 import { Chess, Square } from "chess.js"
@@ -11,7 +10,7 @@ import { useUser } from "@clerk/nextjs"
 export default function Page() {
   const user = useUser()
   const mutation = trpc.dailypuzzle.completedDailyPuzzles.useMutation()
-  const { startingFen, history, solutionMoves, loading, rating, puzzleId } = usePuzzle()
+  const { startingFen, history, solutionMoves, rating, puzzleId } = usePuzzle()
   const [game, setGame] = useState(new Chess())
   const [moves, setMoves] = useState<string[]>([])
   const [oldMoves, setOldMoves] = useState<string[]>([])
@@ -119,21 +118,26 @@ export default function Page() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center py-8 bg-slate-100">
-      <h1 className="text-xl font-bold mb-2">Chess Daily Puzzles</h1>
-      <h2 className="font-bold mb-2">{gameStatus}</h2>
-      <div className="shadow-lg rounded-md overflow-hidden pt-5">
-        <Chessboard
-          arePremovesAllowed={true}
-          position={game.fen()}
-          onPieceDrop={onDrop}
-          boardWidth={650}
-        />
-      </div>
-      <div className="mt-4">
-        <h3 className="text-lg font-semibold">Your Moves:</h3>
-        <p className="font-mono">{oldMoves.join(", ")}</p>
-      </div>
-    </div>
+<div className="flex flex-col items-center justify-center pb-10 px-4 bg-gradient-to-b from-slate-900 to-slate-800 text-white">
+  <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-center">
+    ♟️ Chess Daily Puzzles
+  </h1>
+
+  <h2
+    className={`text-sm sm:text-base font-semibold mb-4 px-3 py-1 rounded-full ${
+      gameStatus === 'Correct!' ? 'bg-green-600 text-white' : gameStatus === 'Incorrect' ? 'bg-red-600 text-white' : 'bg-slate-700 text-slate-200'
+    }`}>{gameStatus}</h2>
+
+  <div className="shadow-xl rounded-2xl overflow-hidden border border-slate-700">
+    <Chessboard arePremovesAllowed={true} position={game.fen()} onPieceDrop={onDrop} boardWidth={Math.min(637, typeof window !== "undefined" ? window.innerWidth - 40 : 637)}/>
+  </div>
+
+  <div className="mt-6 w-full max-w-xl px-4">
+    <h3 className="text-lg font-semibold mb-1">Your Moves:</h3>
+    <p className="font-mono text-sm text-slate-300 break-words">
+      {oldMoves.length > 0 ? oldMoves.join(", ") : "No moves yet."}
+    </p>
+  </div>
+</div>
   )
 }

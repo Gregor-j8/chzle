@@ -36,15 +36,19 @@ export default function EditPostForm({postId, initialHeader, initialDescription,
   }
 
   return (
-<div className="m-4 w-[60%] mx-auto rounded-2xl border border-slate-700 bg-gray-800 p-6 shadow-md">
-  <h2 className="text-xl font-bold text-white mb-4">Edit Post</h2>
-  <input type="text" value={header} onChange={(e) => setHeader(e.target.value)} placeholder="Post title"
-   className="w-full mb-4 p-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"/>
-  <textarea rows={5} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Post description"
-    className="w-full mb-4 p-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"/>
-  <div className="flex justify-end space-x-3">
-    <button onClick={handleSubmit} className="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white transition">Save</button>
-    <button onClick={onCancel} className="px-4 py-2 rounded-lg bg-slate-600 hover:bg-slate-700 text-white transition"> Cancel</button>
+<div className="w-full max-w-2xl mx-auto mt-10 px-6 py-8 rounded-2xl border border-slate-700 bg-gray-800 shadow-lg">
+  <h2 className="text-2xl font-bold text-white mb-6 text-center">✏️ Edit Post</h2>
+  <input type="text" value={header} onChange={(e) => setHeader(e.target.value)}  placeholder="Enter post title"
+    className="w-full mb-5 px-4 py-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 transition"/>
+<textarea rows={6} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Write your description..." className="w-full mb-6 px-4 py-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 transition resize-none"/>
+
+  <div className="flex justify-end gap-4">
+    <button onClick={onCancel} className="px-5 py-2.5 rounded-lg bg-slate-600 hover:bg-slate-700 text-white transition shadow-sm">
+      Cancel
+    </button>
+    <button onClick={handleSubmit} className="px-5 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white transition shadow-md">
+      Save
+    </button>
   </div>
 </div>
   )

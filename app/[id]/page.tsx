@@ -95,47 +95,93 @@ const handleCommentSubmit = () => {
           }
 
   return (
-<div className="m-4 w-[60%] mx-auto flex flex-col  rounded-2xl border border-slate-700 bg-gray-800 p-6 shadow-md">
-  <h1 className="text-2xl font-bold text-white">{data.header}</h1>
-  <p className="mt-4 text-base text-slate-300">{data.description}</p>
-  <div className="flex justify-between items-center mt-6 text-sm text-slate-500">
-    <div className="flex items-center space-x-4">
-      <button onClick={() => handleLike(data.id)} className="flex items-center space-x-1 hover:text-white transition">
+<div className="m-4 w-full max-w-3xl mx-auto flex flex-col rounded-2xl border border-slate-700 bg-gray-800 p-6 shadow-md">
+  <h1 className="text-2xl font-bold text-white mb-2">{data.header}</h1>
+  <p className="text-base text-slate-300">{data.description}</p>
+
+  <div className="flex flex-wrap items-center justify-between mt-6 gap-2 text-sm text-slate-500">
+    <div className="flex items-center gap-4">
+      <button onClick={() => handleLike(data.id)} className="flex items-center gap-1 hover:text-white transition">
         {data.likes.find(like => like.userid === user?.id)
-        ? <HandThumbUpIcon className="h-5 w-5 text-blue-500" />
-        : <HandThumbUpOutlineIcon className="h-5 w-5" />}
-      <span>{data.likes.length}</span>
-    </button>
-      <button onClick={() => setShowCommentBox(prev => !prev)} className="flex items-center space-x-1 hover:text-white transition">
-        <MessageCircle size={16}/>
+          ? <HandThumbUpIcon className="h-5 w-5 text-blue-500" />
+          : <HandThumbUpOutlineIcon className="h-5 w-5" />}
+        <span>{data.likes.length}</span>
+      </button>
+      <button onClick={() => setShowCommentBox(prev => !prev)} className="flex items-center gap-1 hover:text-white transition">
+        <MessageCircle size={16} />
+        <span>Comment</span>
       </button>
     </div>
-    <span className="font-medium cursor-pointer"><Link href={`/profile/${data.user.username}`}>Posted by {data.user.username}</Link></span>
-    <span className="font-medium">Posted on {new Date(data.createdat).toLocaleDateString()}</span>
-        {data.userid == user?.id && (
-          <div>
-            <button onClick={() => {handleDelete(data.id)}}><Trash2 size={24} /></button>
-            <button onClick={() => setShowEditPostBox(true)}><Pencil size={24} /></button>
-            </div>
-        )} 
+
+    <div className="text-right">
+      <p><Link href={`/profile/${data.user.username}`} className="font-medium hover:text-white">Posted by {data.user.username}</Link></p>
+      <p className="text-xs">Posted on {new Date(data.createdat).toLocaleDateString()}</p>
+    </div>
   </div>
-  <div className="mt-6 space-y-4">
+
+  {data.userid === user?.id && (
+    <div className="flex justify-end gap-3 mt-4">
+      <button onClick={() => handleDelete(data.id)} className="text-red-400 hover:text-red-500 transition">
+        <Trash2 size={20} />
+      </button>
+      <button onClick={() => setShowEditPostBox(true)} className="text-blue-400 hover:text-blue-500 transition">
+        <Pencil size={20} />
+      </button>
+    </div>
+  )}
+
+  {showEditPostBox && (
+    <div className="my-6 w-full">
+      <EditPostForm postId={data.id} initialHeader={data.header} initialDescription={data.description}
+        onSuccess={async () => {
+          await utils.userPostsRouter.getPostDetails.refetch(id.toString());
+          setShowEditPostBox(false);
+        }}
+        onCancel={() => setShowEditPostBox(false)}
+      />
+    </div>
+  )}
+
+  {showCommentBox && editComment && !showEditBox && (
+    <div className="mt-6">
+      <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={3} placeholder="Write your comment..."
+        className="w-full p-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600"/>
+      <button onClick={handleCommentSubmit} className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white transition">
+       Post Comment
+      </button>
+    </div>
+  )}
+
+  {showEditBox && editComment && !showCommentBox && (
+    <div className="mt-6">
+      <textarea value={editComment.description} onChange={(e) => setEditComment({ ...editComment, description: e.target.value })} rows={3}
+        className="w-full p-3 rounded-lg bg-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <button onClick={handleUpdateComment} className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white transition">
+        Update Comment
+      </button>
+    </div>
+  )}
+
+  <div className="mt-8 max-h-[400px] overflow-y-auto space-y-4 pr-1 hide-scrollbar">
     {data.comments.map(comment => (
       <div key={comment.id} className="rounded-lg bg-slate-700 p-4 text-slate-100 shadow-sm">
         <div className="mb-2 flex items-center justify-between text-sm text-slate-400">
           <span className="font-semibold">{comment.user.username}</span>
-          <span className="text-xs">
-            {new Date(comment.createdAt).toLocaleDateString()}
-          </span>        
+          <span className="text-xs">{new Date(comment.createdAt).toLocaleDateString()}</span>
         </div>
         <p className="text-slate-200 text-sm mb-2">{comment.description}</p>
-
         <div className="flex space-x-4 text-slate-400 text-sm">
-          <button onClick={() => {setEditComment(comment); setShowEditBox(prev => !prev)}} className="flex items-center space-x-1 hover:text-white transition">
+          <button
+            onClick={() => {
+              setEditComment(comment);
+              setShowEditBox(prev => !prev);
+              setShowCommentBox(false);
+            }}
+            className="flex items-center gap-1 hover:text-white transition">
             <Pencil size={16} />
             <span>Edit</span>
           </button>
-          <button onClick={() => handleDeleteComment(comment.id)} className="flex items-center space-x-1 hover:text-red-400 transition">
+          <button onClick={() => handleDeleteComment(comment.id)} className="flex items-center gap-1 hover:text-red-400 transition">
             <Trash2 size={16} />
             <span>Delete</span>
           </button>
@@ -143,37 +189,6 @@ const handleCommentSubmit = () => {
       </div>
     ))}
   </div>
-          {showCommentBox && editComment && !showEditBox &&(
-          <div className="mt-4">
-            <textarea value={comment} onChange={(e) => setComment(e.target.value)} rows={3}
-              className="w-full p-2 rounded bg-slate-700 text-white"
-              placeholder="Write your comment..."/>
-            <button onClick={handleCommentSubmit}
-              className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white">Post Comment
-            </button>
-          </div>
-        )}
-          {showEditBox && editComment && !showCommentBox && (
-          <div className="mt-4">
-            <textarea value={editComment.description} onChange={(e) => setEditComment({ ...editComment, description: e.target.value })} rows={3}
-              className="w-full p-2 rounded bg-slate-700 text-white"/>
-            <button onClick={handleUpdateComment}
-              className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white">Update Comment
-            </button>
-          </div>
-        )}
-          {showEditPostBox && (
-          <EditPostForm
-            postId={data.id}
-            initialHeader={data.header}
-            initialDescription={data.description}
-            onSuccess={async () => {
-              await utils.userPostsRouter.getPostDetails.refetch(id.toString())
-              setShowEditPostBox(false)
-            }}
-            onCancel={() => setShowEditPostBox(false)}
-          />
-        )}
-      </div>
+</div>
   )
 }

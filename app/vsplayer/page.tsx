@@ -47,19 +47,19 @@ export default function Lobby() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-      <button onClick={handleCreate} className="bg-blue-600 text-white px-4 py-2 rounded">
-        🎲 Create Game
-      </button>
-      <input
-        className="border px-2 py-1 rounded"
-        placeholder="Enter Room ID"
-        value={roomIdInput}
-        onChange={(e) => setRoomIdInput(e.target.value)}
-      />
-      <button onClick={handleJoin} className="bg-green-600 text-white px-4 py-2 rounded">
-        🔗 Join Game
-      </button>
-    </div>
+<div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 px-4">
+  <div className="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-sm flex flex-col gap-6">
+    <button onClick={handleCreate}
+      className="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-3 rounded-lg font-semibold">
+      🎲 Create Game
+    </button>
+    <input type="text"
+      className="border border-gray-600 bg-gray-700 text-white placeholder-gray-400 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      placeholder="Enter Room ID" value={roomIdInput} onChange={(e) => setRoomIdInput(e.target.value)}/>
+    <button onClick={handleJoin} className="bg-green-600 hover:bg-green-700 transition text-white px-6 py-3 rounded-lg font-semibold">
+      🔗 Join Game
+    </button>
+  </div>
+</div>
   )
 }

@@ -60,13 +60,23 @@ export default function ReplayModal({ puzzle }: { puzzle: Puzzle }) {
   }
 
   return (
-    <div className="flex w-full flex-col items-center gap-4 p-4">
-      <Chessboard position={fen} boardWidth={400} />
-      <div className="flex gap-4 items-center">
-        <button onClick={handleBack} disabled={step === 0} className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">◀</button>
-        <span className="px-2 text-sm">{step + 1}/{moves.length + 1}</span>
-        <button onClick={handleForward} disabled={step === moves.length}className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">▶</button>
-      </div>
-    </div>
+<div className="flex w-full flex-col items-center gap-6 p-4">
+  <div className="rounded-lg border border-slate-700 shadow-lg">
+    <Chessboard position={fen} boardWidth={350} />
+  </div>
+  <div className="flex flex-wrap items-center justify-center gap-4">
+    <button
+      onClick={handleBack}
+      disabled={step === 0}
+      className={`px-4 py-2 rounded-md text-white transition ${
+        step === 0 ? 'bg-slate-600 cursor-not-allowed' : 'bg-slate-700 hover:bg-slate-600'
+      }`}>◀</button>
+    <span className="text-sm font-medium text-slate-300">{step + 1} / {moves.length + 1}</span>
+    <button onClick={handleForward} disabled={step === moves.length}
+      className={`px-4 py-2 rounded-md text-white transition ${
+        step === moves.length ? 'bg-slate-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>▶
+    </button>
+  </div>
+</div>
   )
 }
