@@ -96,6 +96,12 @@ const loadGame = useCallback(async () => {
   const onDrop = (sourceSquare: string, targetSquare: string) => {
     if (!playerColor || !gameReady || !user) return false
 
+    console.log("Checking game before gameover", game)
+    console.log("gameover value", game.isGameOver())
+    if (game.isGameOver()) {
+      handleGameComplete()
+    }
+
     const turn = game.turn()
     if ((turn === 'w' && playerColor !== 'white') || (turn === 'b' && playerColor !== 'black')) {
       return false
@@ -105,13 +111,7 @@ const loadGame = useCallback(async () => {
     const gameCopy = new Chess(game.fen())
     const result = gameCopy.move(move)
     if (result) {
-      setGame(gameCopy)
-      console.log("Checking game before gameover", game)
-      console.log("gameover value", game.isGameOver())
-    if (game.isGameOver()) {
-      handleGameComplete()
-    }
-
+      setGame(gameCopy);
       (async () => {
         await supabase.from('moves').insert([
           { 
