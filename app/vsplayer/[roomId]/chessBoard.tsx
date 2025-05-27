@@ -96,12 +96,6 @@ const loadGame = useCallback(async () => {
   const onDrop = (sourceSquare: string, targetSquare: string) => {
     if (!playerColor || !gameReady || !user) return false
 
-    console.log("Checking game before gameover", game)
-    console.log("gameover value", game.isGameOver())
-    if (game.isGameOver()) {
-      handleGameComplete()
-    }
-
     const turn = game.turn()
     if ((turn === 'w' && playerColor !== 'white') || (turn === 'b' && playerColor !== 'black')) {
       return false
@@ -128,49 +122,56 @@ const loadGame = useCallback(async () => {
           .from('moves')
           .update({ fen: gameCopy.fen() })
           .eq('gameId', roomId)
+
+    console.log("Checking game before gameover", game)
+    console.log("gameover value", game.isGameOver())
+    if (game.isGameOver()) {
+      handleGameComplete(gameCopy)
+    }
+
       })()
       return true
     }
     return false
   }
 
-const handleGameComplete = async() => {
+const handleGameComplete = async (completedGame: Chess) => {
   try {
-    let resultValue: string = "undecided"
-    
-    if (game.isCheckmate()) {
-      resultValue = game.turn() === 'w' ? playerNames.black : playerNames.white;
-    } else if (game.isDraw()) {
-      resultValue = "tie"
+    let resultValue: string = "undecided";
+
+    if (completedGame.isCheckmate()) {
+      resultValue = completedGame.turn() === 'w' ? playerNames.black : playerNames.white;
+    } else if (completedGame.isDraw()) {
+      resultValue = "tie";
     }
-    
+
     const { data, error } = await supabase.from('completedGame').insert([{
       id: uuidv4(),
       gameId: roomId,
       createdAt: new Date().toISOString(),
       result: resultValue,
-      fen: game.fen()
+      fen: completedGame.fen(),
     }])
-    
+
     if (error) {
       console.error('Database insert error:', error)
       return
     }
-    
+
     console.log('Game completed successfully:', data)
-    
+
     const { error: functionError } = await supabase.functions.invoke('adding-chess-moves', {
       body: { name: 'Functions' },
-    });
-    
+    })
+
     if (functionError) {
-      console.error('Function invoke error:', functionError);
+      console.error('Function invoke error:', functionError)
     }
-    
+
   } catch (err) {
-    console.error('Error in handleGameComplete:', err);
+    console.error('Error in handleGameComplete:', err)
   }
-  
+
   setTimeout(() => {
     router.push("/vsplayer")
   }, 2000)
