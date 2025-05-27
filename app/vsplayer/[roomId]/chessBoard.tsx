@@ -122,13 +122,13 @@ const loadGame = useCallback(async () => {
           .from('moves')
           .update({ fen: gameCopy.fen() })
           .eq('gameId', roomId)
-
-    console.log("Checking game before gameover", game)
-    console.log("gameover value", game.isGameOver())
-    if (game.isGameOver()) {
-      handleGameComplete(gameCopy)
-    }
-
+    setTimeout(() => {
+      console.log("Checking game before gameover", game)
+      console.log("gameover value", game.isGameOver())
+      if (game.isGameOver()) {
+        handleGameComplete(gameCopy)
+      }
+      }, 2000)
       })()
       return true
     }
