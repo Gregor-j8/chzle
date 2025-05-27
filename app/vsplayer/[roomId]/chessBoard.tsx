@@ -125,7 +125,7 @@ const loadGame = useCallback(async () => {
       console.log("Checking game after move", gameCopy.fen())
       console.log("gameover value", gameCopy.isGameOver())
       
-      if (gameCopy.isGameOver()) {  
+      if (gameCopy.isGameOver()) {
         handleGameComplete(gameCopy)
       }
       })()
@@ -147,7 +147,7 @@ const handleGameComplete = async (completedGame: Chess) => {
     const { data, error } = await supabase.from('completedGame').insert([{
       id: uuidv4(),
       gameId: roomId,
-      createdAt: new Date().toISOString(),
+      created_at: new Date().toISOString(),
       result: resultValue,
       fen: completedGame.fen(),
     }])
