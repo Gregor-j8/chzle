@@ -105,8 +105,9 @@ const loadGame = useCallback(async () => {
     const gameCopy = new Chess(game.fen())
     const result = gameCopy.move(move)
     if (result) {
-      setGame(gameCopy);
-
+      setGame(gameCopy)
+      console.log("Checking game before gameover", game)
+      console.log("gameover value", game.isGameOver())
     if (game.isGameOver()) {
       handleGameComplete()
     }
