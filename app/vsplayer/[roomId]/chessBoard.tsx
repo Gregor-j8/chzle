@@ -159,9 +159,7 @@ const handleGameComplete = async (completedGame: Chess) => {
 
     console.log('Game completed successfully:', data)
 
-    const { error: functionError } = await supabase.functions.invoke('adding-chess-moves', {
-      body: { name: 'Functions' },
-    })
+    const { error: functionError } = await supabase.functions.invoke('adding-chess-moves')
 
     if (functionError) {
       console.error('Function invoke error:', functionError)

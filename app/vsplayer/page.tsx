@@ -32,7 +32,9 @@ export default function Lobby() {
       .eq('id', roomId)
       .single()
     
-    if (game.white_player && game.black_player && user.id !== game.white_player && user.id !== game.black_player) {
+    if (game.white_player && game.black_player
+      && user.id !== game.white_player
+      && user.id !== game.black_player) {
       toast.error('Game is full.')
       return
     }
@@ -49,8 +51,7 @@ export default function Lobby() {
   return (
 <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 px-4">
   <div className="bg-gray-800 rounded-2xl shadow-xl p-8 w-full max-w-sm flex flex-col gap-6">
-    <button onClick={handleCreate}
-      className="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-3 rounded-lg font-semibold">
+    <button onClick={handleCreate} className="bg-blue-600 hover:bg-blue-700 transition text-white px-6 py-3 rounded-lg font-semibold">
       🎲 Create Game
     </button>
     <input type="text"
