@@ -14,6 +14,7 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
   const [playerColor, setPlayerColor] = useState<'white' | 'black' | null>(null)
   const [gameReady, setGameReady] = useState(false)
   const [playerNames, setPlayerNames] = useState<{ white: string, black: string }>({ white: '', black: '' })
+  const [Ids, setIds] = useState({white: '', black: ''})
 
 const loadGame = useCallback(async () => {
   if (!user) return;
@@ -27,6 +28,11 @@ const loadGame = useCallback(async () => {
   const { white_player, black_player, fen } = gameData
 
   if (!white_player || !black_player) return;
+
+    setIds({
+    white: white_player,
+    black: black_player,
+  });
 
   const { data: whiteUser } = await supabase
     .from('users')
@@ -159,7 +165,15 @@ const handleGameComplete = async (completedGame: Chess) => {
 
     console.log('Game completed successfully:', data)
 
-    const { error: functionError } = await supabase.functions.invoke('adding-chess-moves')
+    const { error: functionError } = await supabase.functions.invoke('adding-chess-moves', {
+      body: {
+        completedGame: {
+          gameId: roomId,
+          white_player: Ids.white,
+          black_player: Ids.black
+        }
+      }
+    })
 
     if (functionError) {
       console.error('Function invoke error:', functionError)
