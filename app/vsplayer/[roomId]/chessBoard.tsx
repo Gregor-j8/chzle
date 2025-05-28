@@ -16,6 +16,8 @@ const ChessGame = ({ roomId }: { roomId: string }) => {
   const [playerNames, setPlayerNames] = useState<{ white: string, black: string }>({ white: '', black: '' })
   const [Ids, setIds] = useState({white: '', black: ''})
 
+  useEffect(() => {}, [gameReady])
+
 const loadGame = useCallback(async () => {
   if (!user) return;
 
@@ -27,8 +29,7 @@ const loadGame = useCallback(async () => {
 
   const { white_player, black_player, fen } = gameData
 
-  if (!white_player || !black_player) return;
-
+  if (!white_player || !black_player) return
     setIds({
     white: white_player,
     black: black_player,
@@ -86,7 +87,6 @@ const loadGame = useCallback(async () => {
           if (move.player_id !== user?.id) {
             setGame((prevGame) => {
               const updatedGame = new Chess(prevGame.fen())
-              console.log("New move received:", move)
               updatedGame.move({ from: move.from, to: move.to, promotion: 'q' })
               return updatedGame
             })
@@ -128,9 +128,6 @@ const loadGame = useCallback(async () => {
           .from('moves')
           .update({ fen: gameCopy.fen() })
           .eq('gameId', roomId)
-      console.log("Checking game after move", gameCopy.fen())
-      console.log("gameover value", gameCopy.isGameOver())
-      
       if (gameCopy.isGameOver()) {
         handleGameComplete(gameCopy)
       }
@@ -141,16 +138,15 @@ const loadGame = useCallback(async () => {
   }
 
 const handleGameComplete = async (completedGame: Chess) => {
-  try {
-    let resultValue: string = "undecided";
+    let resultValue: string = "undecided"
 
     if (completedGame.isCheckmate()) {
       resultValue = completedGame.turn() === 'w' ? playerNames.black : playerNames.white;
     } else if (completedGame.isDraw()) {
-      resultValue = "tie";
+      resultValue = "tie"
     }
 
-    const { data, error } = await supabase.from('completedGame').insert([{
+    await supabase.from('completedGame').insert([{
       id: uuidv4(),
       gameId: roomId,
       created_at: new Date().toISOString(),
@@ -158,14 +154,7 @@ const handleGameComplete = async (completedGame: Chess) => {
       fen: completedGame.fen(),
     }])
 
-    if (error) {
-      console.error('Database insert error:', error)
-      return
-    }
-
-    console.log('Game completed successfully:', data)
-
-    const { error: functionError } = await supabase.functions.invoke('adding-chess-moves', {
+    await supabase.functions.invoke('adding-chess-moves', {
       body: {
         completedGame: {
           gameId: roomId,
@@ -174,14 +163,6 @@ const handleGameComplete = async (completedGame: Chess) => {
         }
       }
     })
-
-    if (functionError) {
-      console.error('Function invoke error:', functionError)
-    }
-
-  } catch (err) {
-    console.error('Error in handleGameComplete:', err)
-  }
 
   setTimeout(() => {
     router.push("/vsplayer")
@@ -195,9 +176,7 @@ const handleGameComplete = async (completedGame: Chess) => {
         <p> You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
-
-      <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={350} boardOrientation={playerColor === 'black' ? 'black' : 'white'} />
-
+      <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={650} boardOrientation={playerColor === 'black' ? 'black' : 'white'} />
       {game.isGameOver() && (
         <div className="mt-4 text-center text-lg font-bold text-red-500">
           Game Over! {game.isCheckmate() ? 'Checkmate!' : game.isDraw() ? 'Draw!' : ''}
