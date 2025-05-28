@@ -36,7 +36,7 @@ export default function Posts({ searchText }: { searchText: string }) {
   if (!postsToDisplay) return <div>No Posts Found</div>
 
   return (
-   <div className="h-full overflow-y-auto p-4 hide-scrollbar">
+   <div className="h-full overflow-y-auto p-4 scrollbar-none">
   {postsToDisplay.map((post) => (
     <div key={post.id}
       className="mb-6 rounded-2xl border border-slate-700 bg-slate-800 p-5 shadow-md transition-all duration-300 hover:shadow-lg hover:border-slate-500">

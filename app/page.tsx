@@ -7,8 +7,8 @@ function HomePage() {
   const [searchText, setSearchText] = useState('')
 
   return (
-    <div className="h-screen overflow-hidden hide-scrollbar"> 
-      <main className="overflow-none flex h-screen justify-center bg-gray-900">
+    <div className="h-screen overflow-hidden scrollbar-none"> 
+      <main className="overflow-none scrollbar-none flex h-screen justify-center bg-gray-900">
         <div className="flex h-full w-full flex-col border-x border-slate-400 md:max-w-2xl mb-2">
         <div className="text-slate-500 flex items-center justify-center gap-2 p-4 border-b border-slate-700">
             <input placeholder="Search Chess Openings"

@@ -140,7 +140,7 @@ const loadGame = useCallback(async () => {
           { 
             id: uuidv4(), 
             gameId: roomId, 
-            from: result.from, 
+            from: result.from,
             to: result.to, 
             fen: result.after,
             createdAt: new Date().toISOString(), 
@@ -186,7 +186,6 @@ const handleGameComplete = async (completedGame: Chess) => {
         }
       }
     })
-
   setTimeout(() => {
     router.push("/vsplayer")
   }, 2000)
@@ -200,11 +199,6 @@ const handleGameComplete = async (completedGame: Chess) => {
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
       <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={500} boardOrientation={playerColor === 'black' ? 'black' : 'white'} />
-      {game.isGameOver() && (
-        <div className="mt-4 text-center text-lg font-bold text-red-500">
-          Game Over! {game.isCheckmate() ? 'Checkmate!' : game.isDraw() ? 'Draw!' : ''}
-        </div>
-      )}
     </div>
   )
 }
