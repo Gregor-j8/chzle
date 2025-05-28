@@ -70,6 +70,29 @@ const loadGame = useCallback(async () => {
   }, [loadGame])
 
   useEffect(() => {
+  const channel = supabase
+    .channel(`watch_players_${roomId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'games',
+        filter: `id=eq.${roomId}`,
+      },
+      (payload) => {
+        const updated = payload.new
+        if (updated.white_player && updated.black_player) {
+          loadGame()
+        }
+      }
+    ).subscribe()
+  return () => {
+    supabase.removeChannel(channel)
+  }
+}, [roomId, loadGame])
+
+  useEffect(() => {
     if (!gameReady) return
 
     const channel = supabase
@@ -176,7 +199,7 @@ const handleGameComplete = async (completedGame: Chess) => {
         <p> You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
-      <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={650} boardOrientation={playerColor === 'black' ? 'black' : 'white'} />
+      <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={500} boardOrientation={playerColor === 'black' ? 'black' : 'white'} />
       {game.isGameOver() && (
         <div className="mt-4 text-center text-lg font-bold text-red-500">
           Game Over! {game.isCheckmate() ? 'Checkmate!' : game.isDraw() ? 'Draw!' : ''}
