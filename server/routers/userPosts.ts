@@ -2,16 +2,31 @@ import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from 'zod'
 
 export const userPosts = router({
- GetAllPosts: publicProcedure.query(async ({ ctx }) => {
-    const posts = await ctx.prisma.post.findMany({
-        include:{
-            user: true
-        },
-        take: 20,
-        orderBy:[{ createdat: "desc" }]
+ GetAllPosts: publicProcedure
+  .input(
+    z.object({
+      limit: z.number().min(1).max(100).default(10),
+      cursor: z.string().nullish(), 
     })
-    return posts
- }),
+  ).query(async ({ ctx, input }) => {
+    const { limit, cursor } = input
+    const posts = await ctx.prisma.post.findMany({
+      take: limit + 1,
+      cursor: cursor ? { id: cursor } : undefined,
+      orderBy: { createdat: "desc" },
+      include: { user: true },
+    })
+    let nextCursor: typeof cursor | null = null
+    if (posts.length > limit) {
+      const nextItem = posts.pop()
+      nextCursor = nextItem?.id ?? null
+    }
+    return {
+      posts,
+      nextCursor,
+    }
+  }),
+
  CreatePosts: protectedProcedure.input(
     z.object({
     userid: z.string(),
