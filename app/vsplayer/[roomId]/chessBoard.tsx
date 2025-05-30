@@ -121,7 +121,7 @@ const loadGame = useCallback(async () => {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [roomId, gameReady, user?.id])
+  }, [roomId, gameReady, user?.id, game])
 
   const onDrop = (sourceSquare: string, targetSquare: string) => {
     if (!playerColor || !gameReady || !user) return false
@@ -187,17 +187,22 @@ const handleGameComplete = async (completedGame: Chess) => {
         }
       }
     })
-  setTimeout(() => {
+}
+
+  if (game.isGameOver()) {
+      setTimeout(() => {
     router.push(`/postgame/${roomId}`)
   }, 2000)
-}
+
+  }
 
   if (!gameReady) return ( <div>
     <p className="text-white mt-4">Share this game code: {roomId}</p>
     <button className="ml-2 text-blue-400 hover:underline" onClick={() => {
       navigator.clipboard.writeText(roomId)
       toast.success('Link copied!')}}>Click to copy Game Code</button>
-    </div>)
+    </div>
+    )
 
   return (
     <div className="flex flex-col my-[-150px] items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
