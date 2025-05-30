@@ -8,7 +8,7 @@ export default function Posts({ searchText }: { searchText: string }) {
   const [, setQueryText] = useState(searchText)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, } = trpc.userPostsRouter.GetAllPosts.useInfiniteQuery(
-    { limit: 10 },{getNextPageParam: lastPage => lastPage.nextCursor,})
+    { limit: 20 },{getNextPageParam: lastPage => lastPage.nextCursor,})
   const observerRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -40,7 +40,6 @@ export default function Posts({ searchText }: { searchText: string }) {
 
   if (isLoading) return <LoadingPage />
   if (posts.length === 0) return <div>No Posts Found</div>
-
   return (
     <div className="h-full overflow-y-auto p-4 scrollbar-none">
       {posts.map(post => (

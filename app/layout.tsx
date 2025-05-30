@@ -20,9 +20,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <QueryClientProvider client={queryClient}>
           <trpc.Provider client={trpcClient} queryClient={queryClient}>
             <Toaster position="top-right" reverseOrder={false} />
+            <div className="h-screen flex flex-col">
             <NavBar />
-             <div className="pt-16">
+             <div className="flex-1 overflow-hidden pt-16">
                 {children}
+             </div>
              </div>
           </trpc.Provider>
         </QueryClientProvider>

@@ -5,7 +5,7 @@ export const userPosts = router({
  GetAllPosts: publicProcedure
   .input(
     z.object({
-      limit: z.number().min(1).max(100).default(10),
+      limit: z.number().min(1).max(100).default(20),
       cursor: z.string().nullish(), 
     })
   ).query(async ({ ctx, input }) => {
