@@ -14,7 +14,7 @@ export const PuzzleBoard = ({ game, gameStatus, onDrop, onNextPuzzle }: Props) =
       <h1 className="text-xl font-bold mb-2">Chess Puzzles</h1>
       <h2 className="mb-4">{gameStatus}</h2>
       <div className="shadow-lg rounded-md overflow-hidden">
-        <Chessboard arePremovesAllowed={true} position={game.fen()} boardWidth={650}
+        <Chessboard arePremovesAllowed={true} position={game.fen()} boardWidth={Math.min(637, typeof window !== "undefined" ? window.innerWidth - 40 : 637)}
            onPieceDrop={(sourceSquare, targetSquare) => onDrop(sourceSquare, targetSquare)}/>
       </div>
       <div className="mt-4 flex gap-4">

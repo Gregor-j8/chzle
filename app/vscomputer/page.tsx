@@ -124,7 +124,8 @@ export default function GamePage() {
         <h1 className="text-2xl font-bold text-white mb-5">Chess vs Computer</h1>
         <p className="text-lg text-gray-300 mb-4">{status}</p>
         <div className="bg-gray-800 p-4 rounded-lg shadow-lg">
-          <Chessboard boardWidth={Math.min(600)} position={chess.fen()} onPieceDrop={handleDrop} arePremovesAllowed boardOrientation={playerColor === "w" ? "white" : "black"}/>
+          <Chessboard boardWidth={Math.min(637, typeof window !== "undefined" ? window.innerWidth - 40 : 637)} position={chess.fen()}
+            onPieceDrop={handleDrop} arePremovesAllowed boardOrientation={playerColor === "w" ? "white" : "black"}/>
         </div>
         <button className="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-semibold transition-colors" onClick={resetGame}> Start New Game</button>
       </main>

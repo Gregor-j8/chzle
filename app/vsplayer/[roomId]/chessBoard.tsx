@@ -198,7 +198,9 @@ const handleGameComplete = async (completedGame: Chess) => {
         <p> You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
-      <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={500} boardOrientation={playerColor === 'black' ? 'black' : 'white'} />
+      <Chessboard position={game.fen()} onPieceDrop={onDrop}
+       boardWidth={Math.min(637, typeof window !== "undefined" ? window.innerWidth - 40 : 637)} 
+       boardOrientation={playerColor === 'black' ? 'black' : 'white'} />
     </div>
   )
 }
