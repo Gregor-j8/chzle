@@ -19,4 +19,15 @@ export const gameRouter = router({
       })
       return game
     }),
+
+  findGameDetails: protectedProcedure
+    .input(z.object({id: z.string()}))
+    .query(async ({ input, ctx }) => {
+      const { id} = input;
+      const game = await ctx.prisma.game.findFirstOrThrow({
+          where: { id },
+          include: { whitePlayer: true, blackPlayer: true }
+      })
+      return game
+    }),    
 });

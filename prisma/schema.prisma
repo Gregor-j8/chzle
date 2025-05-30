@@ -28,6 +28,8 @@ model User {
   likes      Likes[]  
   comments   comments[] 
   messages   Message[] 
+  whiteGames Game[] @relation("WhitePlayer")
+  blackGames Game[] @relation("BlackPlayer")
   chatrooms  Chatroom[]  @relation("ChatroomMembers")
   following  Follow[] @relation("UserFollowing")
   followers  Follow[] @relation("UserFollowers")
@@ -42,6 +44,8 @@ model Game {
   fen       String
   createdAt DateTime @default(now())
   post      Post[]
+  whitePlayer User @relation("WhitePlayer", fields: [whiteid], references: [id])
+  blackPlayer User @relation("BlackPlayer", fields: [blackid], references: [id])
 }
 
 model Post {

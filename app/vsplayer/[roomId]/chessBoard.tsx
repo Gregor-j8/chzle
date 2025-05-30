@@ -6,6 +6,7 @@ import { supabase } from '@/utils/supabaseClient'
 import { useUser } from '@clerk/clerk-react'
 import { useRouter } from 'next/navigation'
 import { Chessboard } from 'react-chessboard'
+import toast from 'react-hot-toast'
 
 const ChessGame = ({ roomId }: { roomId: string }) => {
   const router = useRouter()
@@ -187,11 +188,17 @@ const handleGameComplete = async (completedGame: Chess) => {
       }
     })
   setTimeout(() => {
-    router.push("/vsplayer")
+    router.push(`/postgame/${roomId}`)
   }, 2000)
 }
 
-  if (!gameReady) return <div>Game not ready...</div>
+  if (!gameReady) return ( <div>
+    <p className="text-white mt-4">Share this game code: {roomId}</p>
+    <button className="ml-2 text-blue-400 hover:underline" onClick={() => {
+      navigator.clipboard.writeText(roomId)
+      toast.success('Link copied!')}}>Click to copy Game Code</button>
+    </div>)
+
   return (
     <div className="flex flex-col items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
       <div className="text-center space-y-1 text-sm sm:text-base">
