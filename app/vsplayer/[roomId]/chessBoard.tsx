@@ -200,7 +200,7 @@ const handleGameComplete = async (completedGame: Chess) => {
     </div>)
 
   return (
-    <div className="flex flex-col my-[-50px] items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
+    <div className="flex flex-col my-[-150px] items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
       <div className="text-center space-y-1 text-sm sm:text-base">
         <p> You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
