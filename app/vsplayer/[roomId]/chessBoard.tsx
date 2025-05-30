@@ -121,7 +121,7 @@ const loadGame = useCallback(async () => {
     return () => {
       supabase.removeChannel(channel)
     }
-  }, [roomId, gameReady, user?.id, game])
+  }, [roomId, gameReady, user?.id])
 
   const onDrop = (sourceSquare: string, targetSquare: string) => {
     if (!playerColor || !gameReady || !user) return false
