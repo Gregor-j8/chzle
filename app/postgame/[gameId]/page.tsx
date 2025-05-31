@@ -6,15 +6,13 @@ import { supabase } from '@/utils/supabaseClient'
 import toast from 'react-hot-toast'
 import { trpc } from '@/utils/trpc'
 import { Chessboard } from 'react-chessboard'
-import { LoadingPage } from '@/app/_components/loading'
 
 export default function PostGame() {
-  const { roomId } = useParams()
+  const roomId = useParams()
   const router = useRouter()
-  const { user } = useUser()
-    if (!roomId) return <div><LoadingPage/></div>
+  const { user } = useUser() 
   const { data: game, isLoading: gameLoading } = trpc.game.findGameDetails.useQuery(
-    { id: roomId.toString() },
+    { id: roomId.gameId?.toString() as string },
     { enabled: !!roomId })
 
   const handleRematch = async () => {
