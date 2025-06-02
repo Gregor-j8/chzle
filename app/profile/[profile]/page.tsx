@@ -25,39 +25,38 @@ export default function ProfilePage() {
   if (!user) return <div>User not found</div>
 
   return (
-    <div className="bg-gray-900 min-h-screen text-white">
-      <main className="flex flex-col items-center justify-center py-10 px-4">
-        <div className="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-md text-center mb-6">
-          <h1 className="text-3xl font-bold">{user.username}</h1>
-          <p className="text-lg text-gray-400">Rating: {user.rating}</p>
-          <FollowBtn userId={user.id}/>
-          <div className='flex justify-around'>
-            <Follower userId={user.id}/>
-            <Following userId={user.id}/>
-          </div>
-
-          <Link href="/" className="text-blue-400 hover:underline">Back to Home</Link>
-        </div>
-
-        <PostSlideshow userId={user.id} />
-        <PuzzleSlideshow userId={user.id} onSelect={p => {
-          setModalId(p)
-          setModal(true)
-        }} />
-        <GameSlideshow userId={user.id} onSelect={g => {
-          setModalId(g)
-          setModal(true)
-        }} />
-
-        {Modal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-gray-800 p-6 rounded-lg shadow-lg">
-              <ReplayModal puzzle={modalId} />
-              <button onClick={() => setModal(false)} className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Close</button>
-            </div>
-          </div>
-        )}
-      </main>
+    <div className="bg-gray-900 min-h-screen text-white overflow-y-auto">
+  <main className="flex flex-col items-center py-2 px-4">
+    <div className="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-md text-center mb-4">
+      <h1 className="text-3xl font-bold">{user.username}</h1>
+      <p className="text-lg text-gray-400">Rating: {user.rating}</p>
+      <FollowBtn userId={user.id}/>
+      <div className='flex justify-around'>
+        <Follower userId={user.id}/>
+        <Following userId={user.id}/>
+      </div> 
+      <Link href="/" className="text-blue-400 hover:underline">Back to Home</Link>
     </div>
+     
+    <PostSlideshow userId={user.id} />
+    <PuzzleSlideshow userId={user.id} onSelect={p => {
+      setModalId(p)
+      setModal(true)
+    }} />
+    <GameSlideshow userId={user.id} onSelect={g => {
+      setModalId(g)
+      setModal(true)
+    }} />
+     
+    {Modal && (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+        <div className="bg-gray-800 p-6 rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
+          <ReplayModal puzzle={modalId} />
+          <button onClick={() => setModal(false)} className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Close</button>
+        </div>
+      </div>
+    )}
+  </main>
+</div>
   )
 }

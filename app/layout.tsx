@@ -22,7 +22,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Toaster position="top-right" reverseOrder={false} />
             <div className="h-screen flex flex-col">
             <NavBar />
-             <div className="flex-1 overflow-hidden pt-16">
+             <div className="flex-1 lg:overflow-hidden sm:overflow-y-auto pt-16">
                 {children}
              </div>
              </div>
