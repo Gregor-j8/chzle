@@ -3,8 +3,8 @@ import Link from "next/link"
 export default function NewGame() {
 
     return (
-        <div className="flex flex-col justify-center items-center w-full overscroll-none">
-            <section className="flex w-1/4 mt-30 flex-col items-center py-12 justify-center bg-slate-100">
+        <div className="flex flex-col justify-center items-center w-full overscroll-none ">
+            <section className="flex lg:w-1/4  mt-30 flex-col items-center py-12 justify-center sm:w-full px-2 bg-slate-100">
                 <h1 className="text-xl text-blue-600 font-bold mb-2 ">New Game</h1>
                 <div className="mb-2 text-lg text-blue-600">Choose your opponent:</div>
                 <div className="mt-4 flex gap-4">
