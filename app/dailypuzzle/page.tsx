@@ -56,13 +56,13 @@ export default function Page() {
   const onDrop = useCallback(
     (sourceSquare: Square, targetSquare: Square) => {
       if (game.turn() !== playerColor) {
-        toast.error("It is not your turn", { duration: 3000, position: "top-center" });
+        toast.error("It is not your turn", { duration: 3000, position: "bottom-center" });
         return false;
       }
 
       const pieceObj = game.get(sourceSquare);
       if (!pieceObj || pieceObj.color !== playerColor) {
-        toast.error("You can only move your pieces", { duration: 3000, position: "top-center" });
+        toast.error("You can only move your pieces", { duration: 3000, position: "bottom-center" });
         return false;
       }
 
@@ -70,7 +70,7 @@ export default function Page() {
       const expectedMove = moves[0];
 
       if (attemptedMove !== expectedMove) {
-        toast.error("That's not the correct move for this puzzle", { duration: 3000, position: "top-center" });
+        toast.error("That's not the correct move for this puzzle", { duration: 3000, position: "bottom-center" });
         return false;
       }
 
@@ -78,7 +78,7 @@ export default function Page() {
       const move = gameCopy.move({ from: sourceSquare, to: targetSquare });
 
       if (!move) {
-        toast.error("Illegal move", { duration: 3000, position: "top-center" });
+        toast.error("Illegal move", { duration: 3000, position: "bottom-center" });
         return false;
       }
 
@@ -95,7 +95,7 @@ export default function Page() {
           rating: rating,
           completedDate: new Date().toISOString().slice(0, 10),
         });
-        toast.success("Puzzle completed!", { duration: 3000, position: "top-center" });
+        toast.success("Puzzle completed!", { duration: 3000, position: "bottom-center" });
         return true;
       }
 

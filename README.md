@@ -1,6 +1,6 @@
 # ♟️ CHZLE
 
-**Chzle** is a full-featured modern chess platform that blends gameplay, social interaction, and learning tools — all in a sleek Next.js web app.
+**Chzle** is a full-featured modern chess platform that blends gameplay, social interaction, and learning tools — all in a Next.js web app.
 
 Built with performance and scalability in mind, Chzle offers a unique chess experience for players of all levels.
 
