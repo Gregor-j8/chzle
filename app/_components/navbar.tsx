@@ -24,7 +24,8 @@ export default function NavBar() {
     { label: "Home", path: "/" },
     { label: "Puzzles", path: "/puzzles" },
     { label: "Daily Puzzle", path: "/dailypuzzle" },
-    { label: "New Game", path: "/game" }
+    { label: "New Game", path: "/game" },
+    { label: "Profile", path: `/profile/${user?.username}` },
   ]
   useEffect(() => {
     if (user && data === undefined) return
@@ -132,8 +133,13 @@ export default function NavBar() {
                 className={`text-sm font-medium px-3 py-2 rounded transition ${
                   isActive(link.path) ? "bg-blue-50 text-blue-600 font-semibold" : "text-gray-700 hover:bg-gray-50"}`}
                 onClick={() => setIsMenuOpen(false)}>{link.label}
-              </Link>
+              </Link> 
             ))}
+                <SignOutButton>
+                  <button className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100" onClick={() => {setIsMenuOpen(false)}}>
+                    Sign Out
+                  </button>
+                </SignOutButton>
           </div>
         </div>
       )}
