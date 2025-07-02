@@ -22,15 +22,13 @@ export default function VsComputerModal({ setAiLevel, setPlayerColor }: VsComput
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-90">
     <div className="bg-gray-800 text-white rounded-lg shadow-xl p-6 w-full max-w-md">
       <h2 className="text-2xl font-bold text-center mb-6">Play vs Computer</h2>
-      <div className="mb-6">
-        <label className="block mb-2 text-gray-300 font-medium">Choose Difficulty</label>
-        <select className="w-full p-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-2 focus:ring-blue-500" value={difficulty} onChange={(e) => setDifficulty(Number(e.target.value))}>
-          <option value={0}>Select difficulty</option>
-          <option value={1}>Easy</option>
-          <option value={2}>Medium</option>
-          <option value={3}>Hard</option>
-        </select>
-      </div>
+    <div className="w-full mb-6">
+      <label htmlFor="difficulty-slider" className="block mb-2 text-white">
+        Difficulty: <span className="font-bold text-blue-400">{difficulty}</span>
+      </label>
+      <input id="difficulty-slider" type="range" min={1} max={16} value={difficulty}
+        onChange={(e) => setDifficulty(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"/>
+    </div>
       <div className="mb-6">
         <label className="block mb-2 text-gray-300 font-medium">Choose Color</label>
         <div className="flex gap-4">

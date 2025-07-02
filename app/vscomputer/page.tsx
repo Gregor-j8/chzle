@@ -1,7 +1,6 @@
 "use client"
 import { useEffect, useState, useCallback } from "react"
 import { Chess, Move, Square } from "chess.js"
-import { Game as EngineGame } from "js-chess-engine"
 import { Chessboard } from "react-chessboard"
 import { useUser } from "@clerk/nextjs"
 import { toast } from "react-hot-toast"
@@ -12,6 +11,7 @@ import { createId } from '@paralleldrive/cuid2'
 export default function GamePage() {
   const { user } = useUser()
   const createGame = trpc.game.createGame.useMutation()
+  const getMove = trpc.game.getAiMove.useMutation()
   const [chess, setChess] = useState<Chess | null>(null)
   const [aiLevel, setAiLevel] = useState<number>(0)
   const [playerColor, setPlayerColor] = useState<"w" | "b" | null>(null)
@@ -20,35 +20,6 @@ export default function GamePage() {
   const [status, setStatus] = useState<string>("Waiting...")
   const [, setIsAITurn] = useState<boolean>(false)
   const isPlayerTurn = chess && chess.turn() === playerColor
-
-  useEffect(() => {
-    if (aiLevel && playerColor && !chess) {
-      const newGame = new Chess()
-      setChess(newGame)
-      if (playerColor === "b") {
-        handleAIMove(newGame)
-      }}}, [aiLevel, playerColor])
-
-  const handleAIMove = useCallback(
-    (gameState: Chess) => {
-      if (gameState.isGameOver()) return
-      setIsAITurn(true)
-      setStatus("Computer is thinking...")
-      setTimeout(() => {
-        const engine = new EngineGame(gameState.fen())
-        const move = engine.aiMove(aiLevel)
-        const from = Object.keys(move)[0].toLowerCase()
-        const to = move[from.toUpperCase()].toLowerCase()
-        const updatedGame = new Chess(gameState.fen())
-        const madeMove = updatedGame.move({ from, to, promotion: "q" })
-        if (madeMove) {
-          setMoveHistory((prev) => [...prev, madeMove])
-          setChess(updatedGame)
-          updateStatus(updatedGame)
-        }
-        setIsAITurn(false)
-      }, 500)
-    }, [aiLevel])
 
   const updateStatus = useCallback((game: Chess) => {
       if (game.isCheckmate()) {
@@ -65,6 +36,34 @@ export default function GamePage() {
         setStatus(game.turn() === playerColor ? "Your turn" : "Computer's turn")
       }
     }, [playerColor])
+
+  const makeAIMove = useCallback(async (gameState: Chess) => {
+    if (aiLevel === 0) return
+    const fen = gameState.fen();
+    console.log(fen)
+    const { bestmove, ponder } = await getMove.mutateAsync({ fen, depth: aiLevel });
+    if (!bestmove || bestmove.length < 4) throw new Error("Invalid move from Stockfish");
+    const from = bestmove.slice(0, 2)
+    const to = bestmove.slice(2, 4)
+    const updatedGame = new Chess(fen)
+    const madeMove = updatedGame.move({ from, to, promotion: "q" });
+
+    if (madeMove) {
+      setMoveHistory((prev) => [...prev, madeMove]);
+      setChess(updatedGame);
+      updateStatus(updatedGame);
+    }
+  }, [getMove, updateStatus]);
+
+  useEffect(() => {
+    if (aiLevel && playerColor && !chess) {
+      const newGame = new Chess()
+      setChess(newGame)
+      if (playerColor === "b") {
+        makeAIMove(newGame)
+      }
+    }
+  }, [aiLevel, playerColor, chess, makeAIMove])
 
   const handleDrop = useCallback((source: Square, target: Square) => {
       if (!chess || !isPlayerTurn) {
@@ -84,11 +83,11 @@ export default function GamePage() {
         setMoveHistory((prev) => [...prev, move])
         setChess(newGame)
         updateStatus(newGame)
-        if (!newGame.isGameOver()) setTimeout(() => handleAIMove(newGame), 300)
+        if (!newGame.isGameOver()) setTimeout(() => makeAIMove(newGame), 300)
         return true
       }
       return false
-    }, [chess, isPlayerTurn, handleAIMove, updateStatus])
+    }, [chess, isPlayerTurn, makeAIMove, updateStatus])
 
   useEffect(() => {
     if (!user?.id || !chess || !result || moveHistory.length === 0) return

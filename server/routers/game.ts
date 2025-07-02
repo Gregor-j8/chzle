@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { router, protectedProcedure } from "../trpc";
+import { router, protectedProcedure, publicProcedure } from "../trpc";
 
 export const gameRouter = router({
   createGame: protectedProcedure
@@ -29,5 +29,22 @@ export const gameRouter = router({
           include: { whitePlayer: true, blackPlayer: true }
       })
       return game
-    }),    
+    }),
+  getAiMove: publicProcedure
+      .input(z.object({  fen: z.string(), depth: z.number().min(1).max(16).default(10) }))
+      .mutation(async ({ input }) => {
+        const url = `https://stockfish.online/api/s/v2.php?fen=${encodeURIComponent(input.fen)}&depth=${input.depth}`;
+        const res = await fetch(url)
+        if (!res.ok) throw new Error("Failed to fetch from Stockfish API")
+        const text = await res.text()
+        const bestmoveMatch = text.match(/bestmove\s([a-h][1-8][a-h][1-8][qrbn]?)/)
+        const ponderMatch = text.match(/ponder\s([a-h][1-8][a-h][1-8][qrbn]?)/)
+        const bestmove = bestmoveMatch ? bestmoveMatch[1] : null
+        const ponder = ponderMatch ? ponderMatch[1] : null
+        if (!bestmove) throw new Error("Invalid move from Stockfish API")
+        return {   
+          bestmove: bestmove,
+          ponder: ponder,
+        };
+      }),
 });
