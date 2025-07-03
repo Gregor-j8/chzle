@@ -7,8 +7,10 @@ import { toast } from "react-hot-toast"
 import { trpc } from "@/utils/trpc"
 import VsComputerModal from "../game/vscomputermodal"
 import { createId } from '@paralleldrive/cuid2'
+import { useRouter } from "next/navigation"
 
 export default function GamePage() {
+  const router = useRouter()
   const { user } = useUser()
   const createGame = trpc.game.createGame.useMutation()
   const getMove = trpc.game.getAiMove.useMutation()
@@ -39,21 +41,20 @@ export default function GamePage() {
 
   const makeAIMove = useCallback(async (gameState: Chess) => {
     if (aiLevel === 0) return
-    const fen = gameState.fen();
-    console.log(fen)
-    const { bestmove, ponder } = await getMove.mutateAsync({ fen, depth: aiLevel });
-    if (!bestmove || bestmove.length < 4) throw new Error("Invalid move from Stockfish");
+    const fen = gameState.fen()
+    const { bestmove } = await getMove.mutateAsync({ fen, depth: aiLevel })
+    if (!bestmove || bestmove.length < 4) throw new Error("Invalid move from Stockfish")
     const from = bestmove.slice(0, 2)
     const to = bestmove.slice(2, 4)
     const updatedGame = new Chess(fen)
     const madeMove = updatedGame.move({ from, to, promotion: "q" });
 
     if (madeMove) {
-      setMoveHistory((prev) => [...prev, madeMove]);
-      setChess(updatedGame);
-      updateStatus(updatedGame);
+      setMoveHistory((prev) => [...prev, madeMove])
+      setChess(updatedGame)
+      updateStatus(updatedGame)
     }
-  }, [getMove, updateStatus]);
+  }, [getMove, updateStatus])
 
   useEffect(() => {
     if (aiLevel && playerColor && !chess) {
@@ -89,19 +90,23 @@ export default function GamePage() {
       return false
     }, [chess, isPlayerTurn, makeAIMove, updateStatus])
 
-  useEffect(() => {
-    if (!user?.id || !chess || !result || moveHistory.length === 0) return
-    const pgn = moveHistory.map(m => `${m.from}${m.to}`).join(' ')
-    createGame.mutate({
-      id: createId(), 
-      whiteid: playerColor === "w" ? user.id : "computer",
-      blackid: playerColor === "b" ? user.id : "computer",
-      pgn,
-      result,
-      fen: chess.fen(),
-      createdAt: new Date()
-    })
-  }, [result])
+useEffect(() => {
+  if (!user?.id || !chess || !result || moveHistory.length === 0) return
+  const pgn = moveHistory.map(m => `${m.from}${m.to}`).join(' ')
+  createGame.mutate({
+    id: createId(),
+    whiteid: playerColor === "w" ? user.id : "computer",
+    blackid: playerColor === "b" ? user.id : "computer",
+    pgn,
+    result,
+    fen: chess.fen(),
+    createdAt: new Date()
+  }, {
+    onSuccess(data) {
+      router.push(`/postgame?id=${data.id}`);
+    },
+  });
+}, [result]);
 
   const resetGame = () => {
     setChess(null)

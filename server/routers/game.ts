@@ -19,7 +19,6 @@ export const gameRouter = router({
       })
       return game
     }),
-
   findGameDetails: protectedProcedure
     .input(z.object({id: z.string()}))
     .query(async ({ input, ctx }) => {
@@ -31,7 +30,7 @@ export const gameRouter = router({
       return game
     }),
   getAiMove: publicProcedure
-      .input(z.object({  fen: z.string(), depth: z.number().min(1).max(16).default(10) }))
+      .input(z.object({  fen: z.string(), depth: z.number().min(1).max(15).default(10) }))
       .mutation(async ({ input }) => {
         const url = `https://stockfish.online/api/s/v2.php?fen=${encodeURIComponent(input.fen)}&depth=${input.depth}`;
         const res = await fetch(url)
@@ -45,6 +44,6 @@ export const gameRouter = router({
         return {   
           bestmove: bestmove,
           ponder: ponder,
-        };
+        }
       }),
-});
+})

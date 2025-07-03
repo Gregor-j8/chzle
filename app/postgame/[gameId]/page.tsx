@@ -45,7 +45,7 @@ export default function PostGame() {
         </button>
         <button onClick={() => router.push('/')} className="mt-2 text-sm text-gray-400 hover:text-white">🔙 Back to Lobby</button>
         <h3 className="text-lg font-semibold mb-2">Game Review</h3>
-        <button className='inline-block p-2 rounded-lg  border-transparent bg-gray-800 transform transition  
+        <button className='inline-block p-2 rounded-lg border-transparent bg-gray-800 transform transition  
             cursor-pointer hover:scale-105 hover:shadow-lg'
             onClick={() => {alert("This feature is in progress")}}>
             <Chessboard
