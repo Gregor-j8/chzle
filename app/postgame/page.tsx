@@ -23,15 +23,16 @@ export default function VsComputerPostGame() {
         <button onClick={() => router.push('/')} className="mt-2 text-sm text-gray-400 hover:text-white">🔙 Back to Lobby</button>
         <h3 className="text-lg font-semibold mb-2">Game Review</h3>
         <button className='inline-block p-2 rounded-lg border-transparent bg-gray-800 transform cursor-pointer hover:scale-105 hover:shadow-lg'
-            onClick={() => {router.push(`/gamereview?id=${game?.id}`)}}>
-            <Chessboard
+          onClick={() => router.push(`/gameanalysis/${gameId}`)}>
+          <Chessboard
             position={game?.fen}
             boardWidth={320}
             customBoardStyle={{
-                borderRadius: '8px',
-                boxShadow: '0 4px 10px rgb(0 0 0 / 0.5)',
+              borderRadius: '8px',
+              boxShadow: '0 4px 10px rgb(0 0 0 / 0.5)',
             }}
-            arePiecesDraggable={false}/>
+            arePiecesDraggable={false}
+          />
         </button>
       </div>
     </div>

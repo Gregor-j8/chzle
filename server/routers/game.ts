@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { router, protectedProcedure, publicProcedure } from "../trpc";
+import { router, protectedProcedure, publicProcedure } from "../trpc"
+import { Redis } from '@upstash/redis'
+import { json } from "stream/consumers";
+
+const redis = Redis.fromEnv()
 
 export const gameRouter = router({
   createGame: protectedProcedure
@@ -46,4 +50,24 @@ export const gameRouter = router({
           ponder: ponder,
         }
       }),
+    getEvaluation: publicProcedure
+    .input(z.object({ fen: z.string(), gameId: z.string().optional() }))
+    .query(async ({ input }) => {
+    const { fen, gameId } = input
+    const cacheKey = gameId ? `eval:${gameId}:${fen}` : `eval:${fen}`
+    const cached = await redis.get(cacheKey)
+    if (cached) {
+      return cached
+    }
+
+const res = await fetch(`https://lichess.org/api/cloud-eval?fen=${fen}`)
+    const evalData = await res.json()
+    console.log(evalData)
+    if (evalData.error) {
+      return evalData
+    } else {
+      await redis.set(cacheKey, evalData, { ex: 3600 })
+      return evalData
+    }
+  })
 })

@@ -1,0 +1,113 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { Chess } from 'chess.js'
+import { Chessboard } from 'react-chessboard'
+import { trpc } from '@/utils/trpc'
+import { LoadingSpinner } from '../../_components/loading'
+import EvaluationBar from '../../_components/ChessEvalBar'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { useParams } from 'next/navigation'
+
+export default function GameAnalysis() {
+  const params = useParams()
+  const id = Array.isArray(params.id) ? params.id[0] : params.id!
+  const [chess, setChess] = useState(new Chess())
+  const [currentMoveIndex, setCurrentMoveIndex] = useState(0)
+  const [moveHistory, setMoveHistory] = useState<string[]>([])
+  const [fen, setFen] = useState("")
+  const { data: game, isLoading } = trpc.game.findGameDetails.useQuery({ id }, { enabled: !!id })
+  const { data: evaluation} = trpc.game.getEvaluation.useQuery({ fen, gameId: game?.id }, { enabled: !!fen })
+
+  useEffect(() => {
+  if (!game?.pgn) return
+
+  const gameInstance = new Chess()
+  const moves: string[] = []
+
+  gameInstance.loadPgn(game.pgn)
+  gameInstance.history({ verbose: true }).forEach(m => moves.push(`${m.from}${m.to}`))
+  setMoveHistory(moves)
+  setChess(new Chess())
+  setFen(new Chess().fen())
+  setCurrentMoveIndex(0)
+  }, [game])
+
+  const handleNext = () => {
+    if (currentMoveIndex < moveHistory.length) {
+      const nextGame = new Chess()
+      for (let i = 0; i <= currentMoveIndex; i++) {
+        const move = moveHistory[i]
+        if (move) {
+          nextGame.move({ from: move.slice(0, 2), to: move.slice(2, 4), promotion: 'q' })
+        }
+      }
+      setFen(nextGame.fen())
+      setChess(nextGame)
+      setCurrentMoveIndex(prev => prev + 1)
+    }
+  }
+
+  const handlePrev = () => {
+    if (currentMoveIndex > 0) {
+      const prevGame = new Chess()
+      for (let i = 0; i < currentMoveIndex - 1; i++) {
+        const move = moveHistory[i]
+        if (move) {
+          prevGame.move({ from: move.slice(0, 2), to: move.slice(2, 4), promotion: 'q' })
+        }
+      }
+      setFen(prevGame.fen())
+      setChess(prevGame)
+      setCurrentMoveIndex(prev => prev - 1)
+    }
+  }
+  
+  if (isLoading || !game) {
+    return <div className="text-white mt-10"><LoadingSpinner/></div>
+  }
+
+  return (
+    <div className="w-full flex flex-col items-center mt-6">
+      <div className="flex gap-6">
+        <div className="bg-gray-800 p-4 rounded-md text-white text-sm max-h-[520px] overflow-y-auto w-48">
+          <div className="flex flex-col">
+            {moveHistory.map((move, i) => (
+              <div key={i} className={`py-0.5 ${i === currentMoveIndex - 1 ? 'text-blue-400' : ''}`}>
+                <button value={i} onClick={() => {}}>
+                  {`${i % 2 === 0 ? `${Math.floor(i / 2) + 1}.` : ''} ${move}`}
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div>
+          <Chessboard
+            position={chess.fen()}
+            arePiecesDraggable={false}
+            boardWidth={650}
+          />
+        </div>
+        <div className='flex'>
+        <EvaluationBar evaluation={evaluation} />
+            {evaluation?.error ? <div>{evaluation?.error}</div> : evaluation?.pvs.map((pv, i) => {
+              return (
+                <div key={i} className='flex'>
+                  <div className='flex flex-col'>
+                    <p>{pv.moves}</p>
+                  </div>
+                </div>
+              )})}
+        </div>
+      </div>
+      <div className="flex items-center gap-3 mt-4">
+        <button onClick={handlePrev} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
+          <ArrowLeft/>
+        </button>
+        <span className="text-white">{`Move ${currentMoveIndex} / ${moveHistory.length}`}</span>
+        <button onClick={handleNext} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
+          <ArrowRight/>
+        </button>
+      </div>
+    </div>
+  )
+}
