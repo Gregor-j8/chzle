@@ -10,14 +10,14 @@ import { useParams } from 'next/navigation'
 
 export default function GameAnalysis() {
   const params = useParams()
-  const id = Array.isArray(params.id) ? params.id[0] : params.id!
+  const { gameId } = params
+  const id: string = typeof gameId === 'string' ? gameId : ''
   const [chess, setChess] = useState(new Chess())
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0)
   const [moveHistory, setMoveHistory] = useState<string[]>([])
   const [fen, setFen] = useState("")
   const { data: game, isLoading } = trpc.game.findGameDetails.useQuery({ id }, { enabled: !!id })
   const { data: evaluation} = trpc.game.getEvaluation.useQuery({ fen, gameId: game?.id }, { enabled: !!fen })
-
   useEffect(() => {
   if (!game?.pgn) return
 
@@ -26,6 +26,8 @@ export default function GameAnalysis() {
 
   gameInstance.loadPgn(game.pgn)
   gameInstance.history({ verbose: true }).forEach(m => moves.push(`${m.from}${m.to}`))
+  console.log("game", gameInstance)
+  console.log("moves", moves)
   setMoveHistory(moves)
   setChess(new Chess())
   setFen(new Chess().fen())
@@ -65,7 +67,7 @@ export default function GameAnalysis() {
   if (isLoading || !game) {
     return <div className="text-white mt-10"><LoadingSpinner/></div>
   }
-
+  
   return (
     <div className="w-full flex flex-col items-center mt-6">
       <div className="flex gap-6">

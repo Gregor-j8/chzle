@@ -103,7 +103,8 @@ useEffect(() => {
     createdAt: new Date()
   }, {
     onSuccess(data) {
-      router.push(`/postgame?id=${data.id}`);
+      const CGameId = data.id
+      router.push(`/postgame/VsComputer/${CGameId}`);
     },
   });
 }, [result]);

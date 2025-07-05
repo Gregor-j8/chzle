@@ -1,13 +1,13 @@
 'use client'
-import {  useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { trpc } from '@/utils/trpc'
 import { Chessboard } from 'react-chessboard'
-import { useSearchParams } from 'next/navigation';
 
 export default function VsComputerPostGame() {
   const router = useRouter()
-  const searchParams = useSearchParams();
-  const gameId = searchParams.get("id");
+  const params = useParams()
+  const {CGameId} = params
+  const gameId = typeof CGameId === 'string' ? CGameId : ''
   if (!gameId) return null
   const { data: game, isLoading: gameLoading } = trpc.game.findGameDetails.useQuery({ id: gameId }, { enabled: !!gameId })
   if (!game && !gameLoading) return <div className="text-white text-center mt-10">Loading game results...</div>
@@ -27,10 +27,6 @@ export default function VsComputerPostGame() {
           <Chessboard
             position={game?.fen}
             boardWidth={320}
-            customBoardStyle={{
-              borderRadius: '8px',
-              boxShadow: '0 4px 10px rgb(0 0 0 / 0.5)',
-            }}
             arePiecesDraggable={false}
           />
         </button>

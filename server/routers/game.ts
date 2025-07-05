@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { router, protectedProcedure, publicProcedure } from "../trpc"
 import { Redis } from '@upstash/redis'
-import { json } from "stream/consumers";
 
 const redis = Redis.fromEnv()
 
@@ -62,7 +61,6 @@ export const gameRouter = router({
 
 const res = await fetch(`https://lichess.org/api/cloud-eval?fen=${fen}`)
     const evalData = await res.json()
-    console.log(evalData)
     if (evalData.error) {
       return evalData
     } else {
