@@ -11,7 +11,7 @@ export default function PostGame() {
   const roomId = useParams()
   console.log(roomId)
   const router = useRouter()
-  const { user } = useUser() 
+  const { user } = useUser()
   const { data: game, isLoading: gameLoading } = trpc.game.findGameDetails.useQuery(
     { id: roomId.gameId?.toString() as string },
     { enabled: !!roomId })
@@ -40,7 +40,7 @@ export default function PostGame() {
         <p className="text-sm">
           {game.whitePlayer.username} (White) vs {game.blackPlayer.username} (Black)
         </p>
-        <p className="text-lg font-semibold">{game.result === 'tie' ? "It's a draw!" : `Winner: ${game.result}`}</p>
+        <p className="text-lg font-semibold">{game.result === 'tie' ? "It's a draw!" : `Winner: ${game?.result === '1-0' ? game?.whitePlayer.username : game?.blackPlayer.username}`}</p>
         <button onClick={handleRematch} className="mt-4 bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-lg font-semibold">
           🔁 Rematch
         </button>

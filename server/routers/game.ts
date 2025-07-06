@@ -58,7 +58,6 @@ export const gameRouter = router({
     if (cached) {
       return cached
     }
-
 const res = await fetch(`https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}`)
     const evalData = await res.json()
     if (evalData.error) {
