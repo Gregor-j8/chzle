@@ -218,7 +218,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
       <Chessboard
         position={game.fen()}
         onPieceDrop={onDrop}
-        boardWidth={Math.min(637, typeof window !== 'undefined' ? window.innerWidth - 40 : 637)}
+        boardWidth={Math.min(637, typeof window !== 'undefined' ? window.innerWidth - 40 : 600)}
         boardOrientation={playerColor === 'black' ? 'black' : 'white'}
       />
     </div>
