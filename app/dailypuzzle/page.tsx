@@ -16,12 +16,19 @@ export default function Page() {
   const [oldMoves, setOldMoves] = useState<string[]>([])
   const [gameStatus, setGameStatus] = useState("")
   const [playerColor, setPlayerColor] = useState<"w" | "b">("w")
+  const [width, setWidth] = useState(600)
+
+  useEffect(() => {
+    const handleResize = () => {setWidth(Math.min(637, window.innerWidth - 40))}
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   const makeAIMove = useCallback((currentGame: Chess, solutionMoves: string[]) => {
     if (currentGame.isGameOver() || solutionMoves.length === 0) return null
     const moveStr = solutionMoves[0]
     const move = { from: moveStr.slice(0, 2), to: moveStr.slice(2, 4)}
-
     const gameCopy = new Chess(currentGame.fen())
     const result = gameCopy.move(move)
 
@@ -56,36 +63,35 @@ export default function Page() {
   const onDrop = useCallback(
     (sourceSquare: Square, targetSquare: Square) => {
       if (game.turn() !== playerColor) {
-        toast.error("It is not your turn", { duration: 3000, position: "bottom-center" });
+        toast.error("It is not your turn", { duration: 3000, position: "bottom-center" })
         return false;
       }
-
-      const pieceObj = game.get(sourceSquare);
+      const pieceObj = game.get(sourceSquare)
       if (!pieceObj || pieceObj.color !== playerColor) {
-        toast.error("You can only move your pieces", { duration: 3000, position: "bottom-center" });
-        return false;
+        toast.error("You can only move your pieces", { duration: 3000, position: "bottom-center" })
+        return false
       }
 
-      const attemptedMove = sourceSquare + targetSquare;
-      const expectedMove = moves[0];
+      const attemptedMove = sourceSquare + targetSquare
+      const expectedMove = moves[0]
 
       if (attemptedMove !== expectedMove) {
-        toast.error("That's not the correct move for this puzzle", { duration: 3000, position: "bottom-center" });
-        return false;
+        toast.error("That's not the correct move for this puzzle", { duration: 3000, position: "bottom-center" })
+        return false
       }
 
       const gameCopy = new Chess(game.fen());
-      const move = gameCopy.move({ from: sourceSquare, to: targetSquare });
+      const move = gameCopy.move({ from: sourceSquare, to: targetSquare })
 
       if (!move) {
-        toast.error("Illegal move", { duration: 3000, position: "bottom-center" });
-        return false;
+        toast.error("Illegal move", { duration: 3000, position: "bottom-center" })
+        return false
       }
 
-      const updatedMoves = moves.slice(1);
-      setOldMoves((prevOldMoves) => [...prevOldMoves, attemptedMove]);
-      setMoves(updatedMoves);
-      setGame(gameCopy);
+      const updatedMoves = moves.slice(1)
+      setOldMoves((prevOldMoves) => [...prevOldMoves, attemptedMove])
+      setMoves(updatedMoves)
+      setGame(gameCopy)
 
       if (updatedMoves.length === 0) {
         if (!user.user) return false;
@@ -95,19 +101,19 @@ export default function Page() {
           rating: rating,
           completedDate: new Date().toISOString().slice(0, 10),
         });
-        toast.success("Puzzle completed!", { duration: 3000, position: "bottom-center" });
+        toast.success("Puzzle completed!", { duration: 3000, position: "bottom-center" })
         return true;
       }
 
       setTimeout(() => {
-        const nextAiMove = makeAIMove(gameCopy, updatedMoves);
+        const nextAiMove = makeAIMove(gameCopy, updatedMoves)
         if (nextAiMove) {
-          setGame(nextAiMove.gameCopy);
-          setMoves(nextAiMove.Moves);
-          setOldMoves((prev) => [...prev, nextAiMove.playedMove]);
+          setGame(nextAiMove.gameCopy)
+          setMoves(nextAiMove.Moves)
+          setOldMoves((prev) => [...prev, nextAiMove.playedMove])
         }
-      }, 500);
-      return true;
+      }, 500)
+      return true
     },
     [game, moves, playerColor, makeAIMove, mutation, puzzleId, rating, user.user]
   );
@@ -118,18 +124,15 @@ export default function Page() {
   }
 
   return (
-<div className="flex flex-col items-center justify-center pb-10 px-4 bg-gradient-to-b from-slate-900 to-slate-800 text-white">
-  <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-center">
-    ♟️ Chess Daily Puzzles
-  </h1>
-
-  <h2
-    className={`text-sm sm:text-base font-semibold mb-4 px-3 py-1 rounded-full ${
+<div className="flex flex-col items-center justify-center pb-10 px-4 from-slate-900 to-slate-800 text-white mt-20 lg:mt-5">
+  <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-center">Chess Daily Puzzles</h1>
+  <h2 className={`text-sm sm:text-base font-semibold mb-4 px-3 py-1 rounded-full ${
       gameStatus === 'Correct!' ? 'bg-green-600 text-white' : gameStatus === 'Incorrect' ? 'bg-red-600 text-white' : 'bg-slate-700 text-slate-200'
     }`}>{gameStatus}</h2>
 
   <div className="shadow-xl rounded-2xl overflow-hidden border border-slate-700">
-    <Chessboard arePremovesAllowed={true} position={game.fen()} onPieceDrop={onDrop} boardWidth={Math.min(637, typeof window !== "undefined" ? window.innerWidth - 40 : 637)}/>
+    <Chessboard arePremovesAllowed={true} position={game.fen()} onPieceDrop={onDrop} arePiecesDraggable={true}
+    boardWidth={width}/>
   </div>
 
   <div className="mt-6 w-full max-w-xl px-4">
