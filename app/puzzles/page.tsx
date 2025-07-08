@@ -1,6 +1,5 @@
 "use client"
 import { Suspense } from 'react'
-const dynamicSetting = 'force-dynamic'
 
 export default function PuzzlesPage() {
   return (

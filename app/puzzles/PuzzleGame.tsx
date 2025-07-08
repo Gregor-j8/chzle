@@ -68,20 +68,20 @@ export const usePuzzleGame = (puzzles: Puzzle[] | undefined, puzzleIndex: number
                 issolved: true,
                 completedDate: new Date()
             });
-        toast.success("congrats you solved this puzzle")
+        toast.success("congrats you solved this puzzle", {duration: 3000, position: "top-center", style: { marginTop: "50px" }})
          setOldMoves([])
         }
     }, [moves, oldMoves, user, mutation, puzzles])
 
     const onDrop = useCallback((source: string, target: string) => {
         if (game.turn() !== playerColor) {
-        toast.error("it is not your turn", {duration: 3000, position: "top-center"})
+        toast.error("it is not your turn", {duration: 3000, position: "top-center", style: { marginTop: "50px" }})
         return false
         }
         
         const piece = game.get(source as Square);
         if (!piece || piece.color !== playerColor) {
-        toast.error("you can only move your pieces", {duration: 3000, position: "top-center"})
+        toast.error("you can only move your pieces", {duration: 3000, position: "top-center", style: { marginTop: "50px" }})
         return false
         }
         
@@ -90,7 +90,7 @@ export const usePuzzleGame = (puzzles: Puzzle[] | undefined, puzzleIndex: number
         
         if (move) {
         if (move.lan !== moves[0]) {
-            toast.error("Wrong move try again", {duration: 3000, position: "top-center"})
+            toast.error("Wrong move try again", {duration: 3000, position: "top-center", style: { marginTop: "50px" }})
             return false;
         }
         
