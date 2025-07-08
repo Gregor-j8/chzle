@@ -17,6 +17,8 @@ export default function ChessGame({ roomId }: { roomId: string }) {
   const [playerNames, setPlayerNames] = useState<{ white: string, black: string }>({ white: '', black: '' })
   const [Ids, setIds] = useState({ white: '', black: '' })
   const [width, setWidth] = useState(600)
+  const [hasRefreshed, setHasRefreshed] = useState(false)
+
   
   useEffect(() => {
     const handleResize = () => {setWidth(Math.min(637, window.innerWidth - 40))}
@@ -25,7 +27,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-  const loadGame = useCallback(async () => {
+    const loadGame = useCallback(async () => {
     if (!user) return
 
     const { data: gameData } = await supabase
@@ -74,8 +76,11 @@ export default function ChessGame({ roomId }: { roomId: string }) {
 
     if (fen) {
       setGame(new Chess(fen))
+    } else if (!hasRefreshed) {
+      setHasRefreshed(true)
+      router.refresh()
     }
-  }, [user, roomId, router])
+  }, [user, roomId, router, hasRefreshed])
 
   useEffect(() => {
     loadGame()
@@ -166,6 +171,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
         },
       },
     })
+    setHasRefreshed(false)
   }
 
   const onDrop = (sourceSquare: string, targetSquare: string) => {
