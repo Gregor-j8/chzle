@@ -21,7 +21,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
 
   
   useEffect(() => {
-    const handleResize = () => {setWidth(Math.min(637, window.innerWidth - 40))}
+    const handleResize = () => {setWidth(Math.min(window.innerWidth - 40, 560))}
     handleResize()
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
@@ -66,21 +66,21 @@ export default function ChessGame({ roomId }: { roomId: string }) {
       black: blackUser?.username ?? 'Black',
     })
 
-    if (user.id === white_player) {
+    if (user.id === white_player && !hasRefreshed) {
       setPlayerColor('white')
       setGameReady(true)
-    } else if (user.id === black_player) {
+      setHasRefreshed(true)
+      router.refresh()
+    } else if (user.id === black_player && !hasRefreshed) {
       setPlayerColor('black')
       setGameReady(true)
+      setHasRefreshed(true)
+      router.refresh()
     }
 
     if (fen) {
       setGame(new Chess(fen))
-    } else if (!hasRefreshed) {
-      setHasRefreshed(true)
-      router.refresh()
     }
-    router.refresh()
   }, [user, roomId, router, hasRefreshed])
 
   useEffect(() => {
