@@ -95,7 +95,7 @@ const handleCommentSubmit = () => {
           }
 
   return (
-<div className="m-4 w-full max-w-3xl mx-auto flex flex-col rounded-2xl border border-slate-700 bg-gray-800 p-6 shadow-md">
+<div className="overflow-auto-y m-4 w-full max-w-3xl mx-auto flex flex-col rounded-2xl border border-slate-700 bg-gray-800 p-6 shadow-md">
   <h1 className="text-2xl font-bold text-white mb-2">{data.header}</h1>
   <p className="text-base text-slate-300">{data.description}</p>
 

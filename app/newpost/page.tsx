@@ -44,7 +44,7 @@ export default function NewPost() {
   }
 
     return (
-      <div className="overflow-hidden h-screen bg-gray-900 mt-5">
+      <div className="overflow-hidden h-screen bg-gray-900 mt-3">
         <h1 className="text-center font-bold text-2xl mb-4 text-white">New Post</h1>
         <div className="editor mx-auto w-11/12 max-w-2xl flex flex-col text-white border border-gray-700 p-6 rounded-xl shadow-lg bg-gray-800">
           <input value={Post.title} placeholder="Title" onChange={(e) => setPost({ ...Post, title: e.target.value })}
