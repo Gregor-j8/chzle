@@ -19,7 +19,6 @@ export default function ChessGame({ roomId }: { roomId: string }) {
   const [width, setWidth] = useState(600)
   const [hasRefreshed, setHasRefreshed] = useState(false)
 
-  
   useEffect(() => {
     const handleResize = () => {setWidth(Math.min(window.innerWidth - 40, 560))}
     handleResize()
@@ -27,61 +26,83 @@ export default function ChessGame({ roomId }: { roomId: string }) {
     return () => window.removeEventListener("resize", handleResize)
   }, [])
 
-    const loadGame = useCallback(async () => {
-    if (!user) return
+ const loadGame = useCallback(async () => {
+  if (!user) return
+  const { data: gameData, error } = await supabase
+    .from('games')
+    .select('*')
+    .eq('id', roomId)
+    .single()
 
-    const { data: gameData } = await supabase
-      .from('games')
-      .select('*')
-      .eq('id', roomId)
-      .single()
+  if (error || !gameData) return
 
-    if (!gameData) return
+  const { white_player, black_player, fen, completed } = gameData
 
-    const { white_player, black_player, fen, completed } = gameData
+  if (completed) {
+    router.push(`/postgame/${roomId}`)
+    return
+  }
 
-    if (completed === true) {
-      router.push(`/postgame/${roomId}`)
-      return
-    }
+  if (user.id === white_player) {
+    setPlayerColor('white')
+  } else if (user.id === black_player) {
+    setPlayerColor('black')
+  }
 
-    if (!white_player || !black_player) return
+  if (!white_player || !black_player) {
+    return
+  }
 
-    setIds({ white: white_player, black: black_player })
+  setIds({ white: white_player, black: black_player })
 
-    const { data: whiteUser } = await supabase
-      .from('users')
-      .select('username')
-      .eq('id', white_player)
-      .single()
+  const [whiteUser, blackUser] = await Promise.all([
+    supabase.from('users').select('username').eq('id', white_player).single(),
+    supabase.from('users').select('username').eq('id', black_player).single(),
+  ])
 
-    const { data: blackUser } = await supabase
-      .from('users')
-      .select('username')
-      .eq('id', black_player)
-      .single()
+  setPlayerNames({
+    white: whiteUser.data?.username ?? 'White',
+    black: blackUser.data?.username ?? 'Black',
+  })
+  if (user.id === white_player) {
+    setPlayerColor('white')
+  } else if (user.id === black_player) {
+    setPlayerColor('black')
+  }
+  setGameReady(true)
 
-    setPlayerNames({
-      white: whiteUser?.username ?? 'White',
-      black: blackUser?.username ?? 'Black',
-    })
+  if (fen) {
+    setGame(new Chess(fen))
+  } else if (!hasRefreshed) {
+    setHasRefreshed(true)
+    router.refresh()
+  }
+}, [user, roomId, router, hasRefreshed])
 
-    if (user.id === white_player && !hasRefreshed) {
-      setPlayerColor('white')
-      setGameReady(true)
-      setHasRefreshed(true)
-      router.refresh()
-    } else if (user.id === black_player && !hasRefreshed) {
-      setPlayerColor('black')
-      setGameReady(true)
-      setHasRefreshed(true)
-      router.refresh()
-    }
+  useEffect(() => {
+  const channel = supabase
+    .channel(`watch_players_join_${roomId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'games',
+        filter: `id=eq.${roomId}`,
+      },
+      (payload) => {
+        const updated = payload.new
+        if (updated.white_player && updated.black_player) {
+          loadGame()
+        }
+      }
+    )
+    .subscribe()
 
-    if (fen) {
-      setGame(new Chess(fen))
-    }
-  }, [user, roomId, router, hasRefreshed])
+  return () => {
+    supabase.removeChannel(channel)
+  }
+}, [roomId, loadGame])
 
   useEffect(() => {
     loadGame()
@@ -225,8 +246,8 @@ export default function ChessGame({ roomId }: { roomId: string }) {
     )
 
   return (
-    <div className="flex flex-col my-[-150px] items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
-      <div className="text-center space-y-1 text-sm sm:text-base">
+    <div>
+      <div className="flex flex-col my-[-150px] items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
         <p>You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
