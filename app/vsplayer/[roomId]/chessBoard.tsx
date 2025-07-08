@@ -80,6 +80,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
       setHasRefreshed(true)
       router.refresh()
     }
+    router.refresh()
   }, [user, roomId, router, hasRefreshed])
 
   useEffect(() => {
