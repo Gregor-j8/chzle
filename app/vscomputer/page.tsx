@@ -112,10 +112,10 @@ useEffect(() => {
   }, {
     onSuccess(data) {
       const CGameId = data.id
-      router.push(`/postgame/VsComputer/${CGameId}`);
+      router.push(`/postgame/VsComputer/${CGameId}`)
     },
-  });
-}, [result]);
+  })
+}, [result])
 
   const resetGame = () => {
     setChess(null)

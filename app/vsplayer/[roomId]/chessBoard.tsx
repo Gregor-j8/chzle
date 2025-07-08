@@ -16,6 +16,14 @@ export default function ChessGame({ roomId }: { roomId: string }) {
   const [gameReady, setGameReady] = useState(false)
   const [playerNames, setPlayerNames] = useState<{ white: string, black: string }>({ white: '', black: '' })
   const [Ids, setIds] = useState({ white: '', black: '' })
+  const [width, setWidth] = useState(600)
+  
+  useEffect(() => {
+    const handleResize = () => {setWidth(Math.min(637, window.innerWidth - 40))}
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   const loadGame = useCallback(async () => {
     if (!user) return
@@ -215,12 +223,8 @@ export default function ChessGame({ roomId }: { roomId: string }) {
         <p>You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
-      <Chessboard
-        position={game.fen()}
-        onPieceDrop={onDrop}
-        boardWidth={Math.min(637, typeof window !== 'undefined' ? window.innerWidth - 40 : 600)}
-        boardOrientation={playerColor === 'black' ? 'black' : 'white'}
-      />
+      <Chessboard position={game.fen()} onPieceDrop={onDrop} arePiecesDraggable={true}
+        arePremovesAllowed={true} boardWidth={width} boardOrientation={playerColor === 'black' ? 'black' : 'white'}/>
     </div>
   )
 }
