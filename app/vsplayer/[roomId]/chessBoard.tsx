@@ -119,12 +119,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
           table: 'games',
           filter: `id=eq.${roomId}`,
         },
-        (payload) => {
-          const updated = payload.new
-          if (updated.completed === true) {
-            router.push(`/postgame/${roomId}`)
-          }
-        }
+        () => {}
       )
       .subscribe()
 
@@ -184,7 +179,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
 
     await supabase.from('games').update({ completed: true }).eq('id', roomId)
 
-    await supabase.functions.invoke('adding-chess-moves', {
+    const { data, error } = await supabase.functions.invoke('adding-chess-moves', {
       body: {
         completedGame: {
           gameId: roomId,
@@ -193,7 +188,13 @@ export default function ChessGame({ roomId }: { roomId: string }) {
         },
       },
     })
-    setHasRefreshed(false)
+    if (error) {
+      toast.error('Failed to update match history.')
+      return null 
+    } else {
+      toast.success('Match history updated!')
+      router.push(`/postgame/${data.gameId}`)    
+    }
   }
 
   const onDrop = (sourceSquare: string, targetSquare: string) => {
