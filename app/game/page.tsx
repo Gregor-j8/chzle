@@ -1,21 +1,28 @@
-import Link from "next/link"
+import Link from 'next/link'
 
 export default function NewGame() {
+  return (
+ <div className="overflow-hidden h-screen bg-gray-900 mt-20 lg:mt-10">
+      <h1 className="text-center font-bold text-2xl mb-4 text-white">New Game</h1>
 
-    return (
-        <div className="flex flex-col justify-center items-center w-full overscroll-none ">
-            <section className="flex lg:w-1/4  mt-30 flex-col items-center py-12 justify-center sm:w-full px-2 bg-slate-100">
-                <h1 className="text-xl text-blue-600 font-bold mb-2 ">New Game</h1>
-                <div className="mb-2 text-lg text-blue-600">Choose your opponent:</div>
-                <div className="mt-4 flex gap-4">
-                    <Link href={"/vscomputer"} className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded cursor-pointer">
-                    Computer
-                    </Link>
-                    <Link href={"/vsplayer"} className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded cursor-pointer">
-                    Player
-                    </Link>
-                </div>
-            </section>
+      <div className="editor mx-auto w-11/12 max-w-2xl flex flex-col text-white border border-gray-700 p-6 rounded-xl shadow-lg bg-gray-800">
+        <p className="text-white mb-4 text-lg">Choose your opponent:</p>
+
+        <div className="flex gap-4 justify-center mb-6">
+          <Link href="/vscomputer" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-md transition">
+            Computer
+          </Link>
+          <Link href="/vsplayer" className="bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-5 rounded-md transition">
+            Player
+          </Link>
         </div>
-    )
+
+        <div className="flex justify-end">
+          <Link href="/" className="border border-gray-500 p-2 px-4 rounded-md font-semibold text-gray-300 hover:bg-gray-700">
+            Cancel
+          </Link>
+        </div>
+      </div>
+    </div>
+  )
 }
