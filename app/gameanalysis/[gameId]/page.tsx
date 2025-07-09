@@ -19,6 +19,7 @@ export default function GameAnalysis() {
   const { data: game, isLoading } = trpc.game.findGameDetails.useQuery({ id }, { enabled: !!id })
   const { data: evaluation} = trpc.game.getEvaluation.useQuery({ fen, gameId: game?.id }, { enabled: !!fen })
   const [width, setWidth] = useState(600)
+  const [boardSide, setboardSide] = useState("white")
 
   useEffect(() => {
     const handleResize = () => {setWidth(Math.min(637, window.innerWidth - 40))}
@@ -76,7 +77,7 @@ export default function GameAnalysis() {
   return (
    <div className="w-full flex flex-col items-center px-4 py-6">
       <div className="flex flex-col lg:flex-row gap-6 w-full max-w-6xl justify-center items-center lg:items-start">
-        <div className="w-full lg:w-40 bg-gray-800 rounded-xl p-4 text-white max-h-64 sm:max-h-10 lg:max-h-[520px] overflow-y-auto">
+        <div className="w-full lg:w-40 bg-gray-800 rounded-xl p-4 text-white max-h-64 sm:max-h-30 lg:max-h-[520px] overflow-y-auto">
           <div className="flex lg:flex-col">
             <h1>Game Moves</h1>
                 {moveHistory?.map((move, i) => (
@@ -94,6 +95,7 @@ export default function GameAnalysis() {
                   position={chess.fen()}
                   arePiecesDraggable={false}
                   boardWidth={width}
+                  boardOrientation={boardSide}
                   />
                 </div>
                 <div>
@@ -123,6 +125,8 @@ export default function GameAnalysis() {
             <button onClick={handleNext} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">
               <ArrowRight/>
             </button>
+            <button className='px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600' 
+            onClick={() => {setboardSide(boardSide === "white" ? 'black' : "white")}}>Flip Board</button>
           </div>
       </div>
   )
