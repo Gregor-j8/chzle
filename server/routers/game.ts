@@ -49,22 +49,44 @@ export const gameRouter = router({
           ponder: ponder,
         }
       }),
-    getEvaluation: publicProcedure
-    .input(z.object({ fen: z.string(), gameId: z.string().optional() }))
-    .query(async ({ input }) => {
+getEvaluation: publicProcedure
+  .input(z.object({ fen: z.string().optional(), gameId: z.string().optional() }))
+  .query(async ({ input }) => {
     const { fen, gameId } = input
     const cacheKey = gameId ? `eval:${gameId}:${fen}` : `eval:${fen}`
     const cached = await redis.get(cacheKey)
     if (cached) {
       return cached
     }
-const res = await fetch(`https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}`)
-    const evalData = await res.json()
-    if (evalData.error) {
-      return evalData
-    } else {
-      await redis.set(cacheKey, evalData, { ex: 3600 })
-      return evalData
-    }
+      const response = await fetch("https://chess-api.com/v1", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fen: fen,
+          variants: 1,
+          depth: 12,
+          maxThinkingTime: 50,
+        }),
+      })
+
+      const evalData = await response.json()
+      if (evalData.error) {
+        return evalData
+      } else {
+        const ChessData = {
+          winChance: evalData.winChance,
+          san: evalData.san,
+          eval: evalData.eval,
+          centipawns: evalData.centipawns,
+          continuation: evalData.continuation,
+          continuationArr: evalData.continuationArr,
+          text: evalData.text,
+          move: evalData.move
+        }
+        await redis.set(cacheKey, JSON.stringify(ChessData), { ex: 3600 })
+        return ChessData
+      }
   })
 })

@@ -26,8 +26,6 @@ export default function GameAnalysis() {
 
   gameInstance.loadPgn(game.pgn)
   gameInstance.history({ verbose: true }).forEach(m => moves.push(`${m.from}${m.to}`))
-  console.log("game", gameInstance)
-  console.log("moves", moves)
   setMoveHistory(moves)
   setChess(new Chess())
   setFen(new Chess().fen())
@@ -67,13 +65,13 @@ export default function GameAnalysis() {
   if (isLoading || !game) {
     return <div className="text-white mt-10"><LoadingSpinner/></div>
   }
-  
+  console.log("evaluation", evaluation)
   return (
     <div className="w-full flex flex-col items-center mt-6">
       <div className="flex gap-6">
-        <div className="bg-gray-800 p-4 rounded-md text-white text-sm max-h-[520px] overflow-y-auto w-48">
+        <div className="bg-gray-800 p-4 rounded-md text-white max-h-[520px] overflow-y-auto w-32">
           <div className="flex flex-col">
-            {moveHistory.map((move, i) => (
+            {moveHistory?.map((move, i) => (
               <div key={i} className={`py-0.5 ${i === currentMoveIndex - 1 ? 'text-blue-400' : ''}`}>
                 <button value={i} onClick={() => {}}>
                   {`${i % 2 === 0 ? `${Math.floor(i / 2) + 1}.` : ''} ${move}`}
@@ -91,14 +89,20 @@ export default function GameAnalysis() {
         </div>
         <div className='flex'>
         <EvaluationBar evaluation={evaluation} />
-            {evaluation?.error ? <div>{evaluation?.error}</div> : evaluation?.pvs.map((pv, i) => {
-              return (
-                <div key={i} className='flex'>
-                  <div className='flex flex-col'>
-                    <p>{pv.moves}</p>
+            {evaluation?.error ? (
+              <div>{evaluation?.error}</div>
+            ) : (
+              <div className='ml-3 bg-gray-800 p-4 rounded-md text-white max-h-[520px] overflow-y-auto w-32'>
+                <h1>Bestmoves</h1>
+                {evaluation?.continuationArr?.map((moves, i) => (
+                  <div key={i} className='flex'>
+                    <div className='flex flex-col p-1'>
+                      <p>{i}: {moves},</p>
+                    </div>
                   </div>
-                </div>
-              )})}
+                ))}
+              </div>
+            )}
         </div>
       </div>
       <div className="flex items-center gap-3 mt-4">

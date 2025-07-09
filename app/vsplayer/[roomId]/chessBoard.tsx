@@ -193,7 +193,9 @@ export default function ChessGame({ roomId }: { roomId: string }) {
       return null 
     } else {
       toast.success('Match history updated!')
-      router.push(`/postgame/${data.gameId}`)    
+      setTimeout(()=> {
+        router.push(`/postgame/${data.gameId}`)    
+      }, 500)
     }
   }
 
