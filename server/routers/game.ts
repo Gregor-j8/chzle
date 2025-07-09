@@ -67,7 +67,7 @@ getEvaluation: publicProcedure
           fen: fen,
           variants: 1,
           depth: 12,
-          maxThinkingTime: 50,
+          maxThinkingTime: 25,
         }),
       })
 
