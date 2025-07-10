@@ -25,6 +25,14 @@ export default function OpeningExplorer () {
   const [MoveDetails, SetMoveDetails] = useState({})
   const { data } = trpc.OpeningRouter.getOpenings.useQuery({ fen: game.fen() })
   const [filteredMoves, setFilteredMoves] = useState<MoveData[]>([])
+  const [width, setWidth] = useState(600)
+
+  useEffect(() => {
+    const handleResize = () => {setWidth(Math.min(637, window.innerWidth - 40))}
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   useEffect(() => {
     if(data) {
@@ -100,7 +108,7 @@ export default function OpeningExplorer () {
   return (
     <div className="flex flex-col lg:flex-row gap-6 p-4 sm:p-6 bg-gray-900 text-white min-h-screen">
       <div className="flex flex-col items-center gap-4 w-full lg:w-auto">
-        <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={Math.min(600)} boardOrientation={boardSide} />
+        <Chessboard position={game.fen()} onPieceDrop={onDrop} boardWidth={width} boardOrientation={boardSide} />
         <div className="flex gap-2">
           <button onClick={handleUndo} className="px-4 py-2 bg-red-600 rounded">Undo</button>
           <button onClick={() => setBoardSide(boardSide === 'white' ? 'black' : 'white')} className="px-4 py-2 bg-blue-600 rounded">
