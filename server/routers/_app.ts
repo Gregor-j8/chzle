@@ -6,6 +6,7 @@ import { dailypuzzleRouter } from "./dailyPuzzle"
 import { userPosts } from "./userPosts"
 import { chatRouter } from "./chat"
 import { followRouter } from "./follow"
+import { OpeningRouter } from "./opening"
 
 export const appRouter = router({
   game: gameRouter,
@@ -14,7 +15,8 @@ export const appRouter = router({
   dailypuzzle: dailypuzzleRouter,
   userPostsRouter: userPosts,
   chat: chatRouter,
-  followRouter: followRouter
+  followRouter: followRouter, 
+  OpeningRouter: OpeningRouter
 });
 
 export type AppRouter = typeof appRouter;

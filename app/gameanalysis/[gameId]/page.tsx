@@ -19,7 +19,7 @@ export default function GameAnalysis() {
   const { data: game, isLoading } = trpc.game.findGameDetails.useQuery({ id }, { enabled: !!id })
   const { data: evaluation} = trpc.game.getEvaluation.useQuery({ fen, gameId: game?.id }, { enabled: !!fen })
   const [width, setWidth] = useState(600)
-  const [boardSide, setboardSide] = useState("white")
+  const [boardSide, setboardSide] = useState<"white" | "black">("white")
 
   useEffect(() => {
     const handleResize = () => {setWidth(Math.min(637, window.innerWidth - 40))}
