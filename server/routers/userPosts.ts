@@ -1,5 +1,8 @@
+import { CommentRateLimiter, LikeRateLimiter, postRateLimiter } from "@/utils/RateLimiter";
 import { router, publicProcedure, protectedProcedure } from "../trpc";
 import { z } from 'zod'
+import { TRPCError } from "@trpc/server"
+
 
 export const userPosts = router({
  GetAllPosts: publicProcedure
@@ -35,6 +38,15 @@ export const userPosts = router({
     gameId: z.string().optional()
     })).mutation(async ({ctx, input}) => {
         const { userid, header, description, gameId} = input
+
+        const { success } = await postRateLimiter.limit(userid)
+        if (!success) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: "you are posting too frequently. Try again in a minute.",
+          })
+        }
+
       const post = await ctx.prisma.post.create({
         data: { userid, header, description, gameId }
       })
@@ -108,6 +120,15 @@ export const userPosts = router({
     createdAt: z.date()
     })).mutation(async ({ctx, input}) => {
         const { userid, postId, description, createdAt} = input
+
+      const { success } = await CommentRateLimiter.limit(userid);
+        if (!success) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: "you are commenting too frequently. Try again in a minute.",
+          })
+        }
+
       const comments = await ctx.prisma.comments.create({
         data: { userid, postId, description, createdAt }
       })
@@ -144,6 +165,15 @@ export const userPosts = router({
     postId: z.string(),
     })).mutation(async ({ctx, input}) => {
         const { userid, postId} = input
+
+        const { success } = await LikeRateLimiter.limit(userid)
+        if (!success) {
+          throw new TRPCError({
+            code: "TOO_MANY_REQUESTS",
+            message: "you are commenting too frequently. Try again in a minute.",
+          })
+        }
+  
       const likes = await ctx.prisma.likes.create({
         data: { userid, postId }
       })

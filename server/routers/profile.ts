@@ -1,7 +1,8 @@
 import { z } from 'zod'
 import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
-import { clerkClient } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
+import { userPostsRateLimiter, userPuzzleRateLimiter, usersGameRateLimiter } from '@/utils/RateLimiter'
 
 export const ProfileRouter = router({
   createUser: publicProcedure
@@ -67,6 +68,22 @@ getUserPuzzles: protectedProcedure
     take: z.number().optional(),
   }))
   .query(async ({ ctx, input }) => {
+
+      const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("User not authenticated")
+    }
+
+    const { success } = await userPuzzleRateLimiter.limit(userId)
+
+    if (!success) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Rate limit exceeded. Please wait before getting more puzzles.",
+      })
+    }
+
     return ctx.prisma.userPuzzle.findMany({
       where: { userId: input.userId },
       orderBy: { completedDate: 'desc' },
@@ -84,7 +101,22 @@ getUserGames: publicProcedure
   skip: z.number().optional(),
   take: z.number().optional(),
 }))
-.query(({ ctx, input }) => {
+.query(async ({ ctx, input }) => {
+
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("User not authenticated")
+    }
+
+    const { success } = await usersGameRateLimiter.limit(userId)
+
+    if (!success) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Rate limit exceeded. Please wait before getting more games.",
+      })
+    }
   return ctx.prisma.game.findMany({
     where: {
       OR: [
@@ -104,7 +136,23 @@ getUserPosts: publicProcedure
   skip: z.number().optional(),
   take: z.number().optional(),
 }))
-.query(({ ctx, input }) => {
+.query(async ({ ctx, input }) => {
+
+      const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("User not authenticated")
+    }
+
+    const { success } = await userPostsRateLimiter.limit(userId)
+
+    if (!success) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Rate limit exceeded. Please wait before getting more posts.",
+      })
+    }
+    
   return ctx.prisma.post.findMany({
     where: { userid: input.userId },
     orderBy: { createdat: 'desc' },

@@ -2,6 +2,9 @@ import { z } from "zod"
 import { parse } from "@mliebelt/pgn-parser"
 import { router, publicProcedure } from "../trpc"
 import { Redis } from '@upstash/redis'
+import { auth } from "@clerk/nextjs/server"
+import { TRPCError } from "@trpc/server"
+import { gameReviewRateLimiter } from "@/utils/RateLimiter"
 
 const redis = Redis.fromEnv()
 
@@ -17,6 +20,22 @@ export const gameReviewRouter = router({
     }))
     .query(async ({ input }) => {
       const { username, year, month, page } = input;
+
+          const { userId } = await auth()
+      
+          if (!userId) {
+            throw new Error("User not authenticated")
+          }
+      
+          const { success } = await gameReviewRateLimiter.limit(userId)
+      
+          if (!success) {
+            throw new TRPCError({
+              code: "TOO_MANY_REQUESTS",
+              message: "Rate limit exceeded. Please wait before more game reviews.",
+            })
+          }
+
       const url = `https://api.chess.com/pub/player/${username.trim()}/games/${year}/${month.toString().padStart(2, "0")}/pgn`
 
       const response = await fetch(url)

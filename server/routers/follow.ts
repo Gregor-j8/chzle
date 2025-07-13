@@ -1,6 +1,9 @@
 import { createId } from '@paralleldrive/cuid2'
 import { router, protectedProcedure } from "../trpc";
 import { z } from 'zod'
+import { auth } from '@clerk/nextjs/server';
+import { FollowingRateLimiter } from '@/utils/RateLimiter';
+import { TRPCError } from '@trpc/server';
 
 export const followRouter = router({
     getFollowers: protectedProcedure
@@ -17,6 +20,22 @@ export const followRouter = router({
     createLike: protectedProcedure
     .input(z.object({ followerId: z.string()}))
     .mutation(async ({ ctx, input }) => {
+
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("User not authenticated")
+    }
+
+    const { success } = await FollowingRateLimiter.limit(userId)
+
+    if (!success) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Rate limit exceeded. Please wait before creating another game.",
+      })
+    }
+    
       return ctx.prisma.follow.create({
         data: {
             id: createId(),
