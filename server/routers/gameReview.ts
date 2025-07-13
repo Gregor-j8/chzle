@@ -17,14 +17,12 @@ export const gameReviewRouter = router({
     }))
     .query(async ({ input }) => {
       const { username, year, month, page } = input;
-      console.log(`Fetching game review for ${username} - ${year}/${month} - Page: ${page}`)
       const url = `https://api.chess.com/pub/player/${username.trim()}/games/${year}/${month.toString().padStart(2, "0")}/pgn`
 
       const response = await fetch(url)
       const pgnText = await response.text()
       const cleanPgn = pgnText.replace(/@/g, "")
       const games = parse(cleanPgn, { startRule: "games" })
-
       const gamesArray = Array.isArray(games) ? games : []
       const start = (page - 1) * pagelength
       const end = start + pagelength

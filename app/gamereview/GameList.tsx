@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, X } from "lucide-react"
 import { LoadingPage } from "../_components/loading"
 import { Chessboard } from "react-chessboard"
 
-export default function GameReviewModal({ username, onClose }) {
+export default function GameReviewModal({ username, onClose, setChoosenMatch }) {
   const now = new Date()
   const currentYear = now.getFullYear()
   const currentMonth = now.getMonth() + 1
@@ -17,7 +17,7 @@ export default function GameReviewModal({ username, onClose }) {
   const [IsUpdating, setIsUpdating] = useState(false)
 
   const { data, isLoading, isFetching } = trpc.gameReviewRouter.getGameReview.useQuery({ username, year, month, page }, { enabled: !!username })
-
+console.log(data)
   useEffect(() => {
     if (data) {
       setGameData(data)
@@ -54,7 +54,6 @@ export default function GameReviewModal({ username, onClose }) {
       setPage(1)
     }
   }
-
   if (isLoading && !gameData) return <LoadingPage />
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
@@ -71,7 +70,8 @@ export default function GameReviewModal({ username, onClose }) {
                 <p className="text-sm text-gray-400 mb-4">Page {page} of {gameData.totalPages}</p>
                 <div className="max-h-96 overflow-auto text-sm border border-gray-700 bg-gray-800 rounded-md p-4 space-y-3">
                   {gameData.games.map((game, i) => (
-                    <div key={i} className="p-2 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 transition flex flex-col gap-3">
+                    <div key={i} className="p-2 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 transition flex flex-col gap-3" 
+                    onClick={() => { setChoosenMatch(game); onClose()}}>
                       <div className="flex justify-between items-center gap-4 flex-wrap">
                         <div className="flex flex-col md:flex-row md:items-center md:gap-6 text-gray-100">
                           <div className="space-y-1">
