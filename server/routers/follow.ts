@@ -32,7 +32,7 @@ export const followRouter = router({
     if (!success) {
       throw new TRPCError({
         code: "TOO_MANY_REQUESTS",
-        message: "Rate limit exceeded. Please wait before creating another game.",
+        message: "Rate limit exceeded. Please wait before following.",
       })
     }
     

@@ -96,7 +96,6 @@ export default function Page() {
       if (updatedMoves.length === 0) {
         if (!user.user) return false;
         mutation.mutate({
-          userId: user.user.id,
           puzzleId: puzzleId,
           rating: rating,
           completedDate: new Date().toISOString().slice(0, 10),

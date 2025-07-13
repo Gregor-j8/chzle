@@ -1,10 +1,7 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-export const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-});
+const redis = Redis.fromEnv()
 
 export const postRateLimiter = new Ratelimit({
   redis,
@@ -66,9 +63,15 @@ export const gameReviewRateLimiter = new Ratelimit({
   analytics: true,
   prefix: "ratelimit:gameReviewRateLimiter",
 });
+export const getDailyPuzzleRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(10, "1 h"),
+  analytics: true,
+  prefix: "ratelimit:getDailyPuzzleRateLimiter",
+});
 export const dailyPuzzleRateLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(1, "1 d"),
+  limiter: Ratelimit.slidingWindow(1, "8 h"),
   analytics: true,
   prefix: "ratelimit:dailyPuzzleRateLimiter",
 });

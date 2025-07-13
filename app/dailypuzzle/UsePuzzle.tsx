@@ -1,7 +1,7 @@
 "use client"
 import { Chess, Move } from 'chess.js'
 import { useEffect, useState } from 'react'
-import getPuzzles from './getpuzzle'
+import { trpc } from '@/utils/trpc'
 
 type PuzzleData = {
   startingFen: string
@@ -19,15 +19,19 @@ export default function UsePuzzle(): PuzzleData {
   const [loading, ] = useState(true)
   const [puzzleId, setPuzzleId] = useState<string>('')
   const [rating, setRating] = useState<number>(0)
+  const {data} = trpc.dailypuzzle.getDailyPuzzles.useQuery()
 
   useEffect(() => {
     const fetchPuzzle = async () => {
-        const data = await getPuzzles()
+      console.log(data)
+      if (!data && !data?.alreadyCompleted) return
         const pgn = data?.game.pgn
         setPuzzleId(data?.puzzle.id)
         setRating(data?.puzzle.rating)
         setSolutionMoves(data?.puzzle.solution)
         const initialPly = data?.puzzle.initialPly
+        console.log("pgn", pgn)
+        console.log("initialPly", initialPly)
         if (!pgn || !initialPly) {
           throw new Error('Invalid puzzle data')
         }
@@ -42,7 +46,7 @@ export default function UsePuzzle(): PuzzleData {
         setHistory(fullHistory)
     }
     fetchPuzzle()
-  }, [])
+  }, [data])
 
   return { startingFen, history, solutionMoves, loading, rating, puzzleId }
 }
