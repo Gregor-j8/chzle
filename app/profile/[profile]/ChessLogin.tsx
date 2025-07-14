@@ -3,7 +3,12 @@ import { trpc } from '@/utils/trpc'
 
 export default function ChessLoginModal({ user, onClose }) {
   const [chessUsername, setChessUsername] = useState('')
-  const mutation = trpc.profile.updateChessUsername.useMutation({onSuccess: () => {onClose()}})
+  const ctx = trpc.useContext()
+
+  const mutation = trpc.profile.updateChessUsername.useMutation({onSuccess: () => {
+        ctx.profile.getUserProfileByUsername.invalidate()
+        onClose()
+    }})
 
   useEffect(() => {
     if (user?.ChessUsername) {

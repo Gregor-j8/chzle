@@ -81,3 +81,9 @@ export const FollowingRateLimiter = new Ratelimit({
   analytics: true,
   prefix: "ratelimit:FollowingRateLimiter",
 });
+
+export const ChessUsernameRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.fixedWindow(5, '30 s'),
+  analytics: true,
+})

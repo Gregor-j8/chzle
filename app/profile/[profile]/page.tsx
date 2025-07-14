@@ -11,7 +11,6 @@ import Link from 'next/link'
 import FollowBtn from './FollowBtn'
 import Follower from '@/app/_components/Followers'
 import Following from '@/app/_components/Following'
-import ChessAccount from './ChessAccount'
 import ChessLoginPage from './ChessLogin'
 import ChessAccountPage from './ChessAccount'
 
@@ -72,7 +71,7 @@ export default function ProfilePage() {
     )}
 
   {ChessAccount && (
-    <ChessAccountPage onClose={() => setChessAccount(false)} user={user} />
+    <ChessAccountPage onClose={() => setChessLogin(false)} user={user} />
   )}
   </div>
   )

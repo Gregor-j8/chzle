@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { TRPCError } from '@trpc/server'
 import { auth, clerkClient } from '@clerk/nextjs/server'
-import { userPostsRateLimiter, userPuzzleRateLimiter, usersGameRateLimiter } from '@/utils/RateLimiter'
+import { ChessUsernameRateLimiter, userPostsRateLimiter, userPuzzleRateLimiter, usersGameRateLimiter } from '@/utils/RateLimiter'
 
 export const ProfileRouter = router({
   createUser: publicProcedure
@@ -162,46 +162,37 @@ getUserPosts: publicProcedure
   })
 }),
 
-  getUserFromChess: protectedProcedure
+getUserFromChess: protectedProcedure
   .query(async ({ ctx }) => {
     const { userId } = await auth()
-    console.log(userId)
-    if (!userId) {
-      throw new Error("User not authenticated")
-    }
-    
-    const user = await ctx.prisma.user.findFirst({
-      where: { id: userId },
-    })
 
-    if (!user) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
-    }
-    const chessUser = await fetch(`https://api.chess.com/pub/player/${user?.ChessUsername}/stats`,)
+    if (!userId) throw new Error("User not authenticated")
+
+    const { success } = await ChessUsernameRateLimiter.limit(userId)
+    if (!success) throw new TRPCError({ code: 'TOO_MANY_REQUESTS', message: 'Rate limit exceeded' })
+
+    const user = await ctx.prisma.user.findFirst({ where: { id: userId } })
+    if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
+
+    const chessUser = await fetch(`https://api.chess.com/pub/player/${user.ChessUsername}/stats`)
     const chessData = await chessUser.json()
 
-    if (!chessData) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'Chess user not found' })
-    }
+    if (!chessData) throw new TRPCError({ code: 'NOT_FOUND', message: 'Chess user not found' })
 
     return chessData
   }),
-  updateChessUsername: protectedProcedure
+
+updateChessUsername: protectedProcedure
   .input(z.object({ ChessUsername: z.string() }))
   .mutation(async ({ ctx, input }) => {
     const { userId } = await auth()
+    if (!userId) throw new Error("User not authenticated")
 
-    if (!userId) {
-      throw new Error("User not authenticated")
-    }
+    const { success } = await ChessUsernameRateLimiter.limit(userId)
+    if (!success) throw new TRPCError({ code: 'TOO_MANY_REQUESTS', message: 'Rate limit exceeded' })
 
-    const user = await ctx.prisma.user.findFirst({
-      where: { clerk_id: userId },
-    })
-
-    if (!user) {
-      throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
-    }
+    const user = await ctx.prisma.user.findFirst({ where: { id: userId } })
+    if (!user) throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
 
     return ctx.prisma.user.update({
       where: { id: user.id },
