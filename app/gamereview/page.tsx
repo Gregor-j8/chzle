@@ -8,6 +8,7 @@ export default function GameSearch() {
   const [submittedName, setSubmittedName] = useState("")
   const [showModal, setShowModal] = useState(false)
   const [choosenMatch, setChoosenMatch] = useState({})
+  const [showGameModal, setShowGameModal] = useState(false)
 
   const handleSearch = () => {
     if (!userName) return
@@ -23,14 +24,15 @@ export default function GameSearch() {
       <button onClick={handleSearch} className="px-6 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700">
         Search
       </button>
-    {choosenMatch?.moves && !showModal && (
-        <GameReview choosenMatch={choosenMatch}/>
+    { showGameModal && !showModal && (
+        <GameReview choosenMatch={choosenMatch} onClose={() => setShowGameModal(false)} setChoosenMatch={setChoosenMatch}/>
     )}
       {showModal && (
         <GameReviewModal
           username={submittedName}
           onClose={() => setShowModal(false)}
           setChoosenMatch={setChoosenMatch}
+          setShowGameModal={setShowGameModal}
         />
       )}
     </div>

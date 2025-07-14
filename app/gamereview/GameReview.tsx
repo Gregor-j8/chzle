@@ -6,7 +6,7 @@ import { trpc } from '@/utils/trpc'
 import EvaluationBar from '../_components/ChessEvalBar'
 import { ArrowLeft, ArrowRight, X } from 'lucide-react'
 
-export default function GameReviewModal({ choosenMatch, onClose }) {
+export default function GameReviewModal({ choosenMatch, onClose, setChoosenMatch }) {
   const match = choosenMatch?.tags?.Link?.match(/\d+/)
   const [chess, setChess] = useState(new Chess())
   const [currentMoveIndex, setCurrentMoveIndex] = useState(0)
@@ -71,7 +71,7 @@ export default function GameReviewModal({ choosenMatch, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
       <div className="relative w-full max-w-6xl max-h-[90vh] overflow-y-auto rounded-lg bg-gray-900 p-6 text-white">
-        <button onClick={onClose} className="absolute top-4 right-4 text-white hover:text-gray-400">
+        <button onClick={() => {onClose(); setChoosenMatch(false)}} className="absolute top-4 right-4 text-white hover:text-gray-400">
           <X size={24} />
         </button>
 

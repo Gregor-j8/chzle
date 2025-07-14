@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight, X } from "lucide-react"
 import { LoadingPage } from "../_components/loading"
 import { Chessboard } from "react-chessboard"
 
-export default function GameReviewModal({ username, onClose, setChoosenMatch }) {
+export default function GameReviewModal({ username, onClose, setChoosenMatch, setShowGameModal }) {
   const now = new Date()
   const currentYear = now.getFullYear()
   const currentMonth = now.getMonth() + 1
@@ -70,7 +70,7 @@ export default function GameReviewModal({ username, onClose, setChoosenMatch }) 
                 <div className="max-h-96 overflow-auto text-sm border border-gray-700 bg-gray-800 rounded-md p-4 space-y-3">
                   {gameData.games.map((game, i) => (
                     <div key={i} className="p-2 bg-gray-700 rounded-md border border-gray-600 hover:bg-gray-600 transition flex flex-col gap-3" 
-                    onClick={() => { setChoosenMatch(game); onClose()}}>
+                    onClick={() => { setChoosenMatch(game); onClose(); setShowGameModal(true)}}>
                       <div className="flex justify-between items-center gap-4 flex-wrap">
                         <div className="flex flex-col md:flex-row md:items-center md:gap-6 text-gray-100">
                           <div className="space-y-1">
