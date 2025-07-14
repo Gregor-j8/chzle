@@ -17,7 +17,6 @@ export default function GameReviewModal({ username, onClose, setChoosenMatch }) 
   const [IsUpdating, setIsUpdating] = useState(false)
 
   const { data, isLoading, isFetching } = trpc.gameReviewRouter.getGameReview.useQuery({ username, year, month, page }, { enabled: !!username })
-console.log(data)
   useEffect(() => {
     if (data) {
       setGameData(data)

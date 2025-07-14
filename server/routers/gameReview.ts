@@ -36,13 +36,23 @@ export const gameReviewRouter = router({
             })
           }
 
-      const url = `https://api.chess.com/pub/player/${username.trim()}/games/${year}/${month.toString().padStart(2, "0")}/pgn`
+       const cacheKey = `chess:games:${username}:${year}:${month}`
+      const cachedGames = await redis.get(cacheKey)
+      let gamesArray
 
-      const response = await fetch(url)
-      const pgnText = await response.text()
-      const cleanPgn = pgnText.replace(/@/g, "")
-      const games = parse(cleanPgn, { startRule: "games" })
-      const gamesArray = Array.isArray(games) ? games : []
+      if (cachedGames) {
+        gamesArray = cachedGames
+      } else {
+        const url = `https://api.chess.com/pub/player/${username.trim()}/games/${year}/${month.toString().padStart(2, "0")}/pgn`
+        const response = await fetch(url)
+        const pgnText = await response.text()
+        const cleanPgn = pgnText.replace(/@/g, "")
+        const games = parse(cleanPgn, { startRule: "games" })
+        gamesArray = Array.isArray(games) ? games : []
+
+        await redis.set(cacheKey, JSON.stringify(gamesArray), { ex: 60 * 60 })
+      }
+
       const start = (page - 1) * pagelength
       const end = start + pagelength
       const paginatedGames = gamesArray.slice(start, end)
