@@ -20,10 +20,10 @@ export default function VsComputerPostGame() {
           {game?.whitePlayer.username} (White) vs {game?.blackPlayer.username} (Black)
         </p>
         <p className="text-lg font-semibold">{game?.result === 'tie' ? "It's a draw!" : `Winner: ${game?.result === '1-0' ? game?.whitePlayer.username : game?.blackPlayer.username}`}</p>
-        <button onClick={() => router.push('/')} className="mt-2 text-sm text-gray-400 hover:text-white">🔙 Back to Lobby</button>
+        <button onClick={() => router.push('/')} className="mt-2 text-sm text-gray-400 hover:text-white">Back to Lobby</button>
         <h3 className="text-lg font-semibold mb-2">Game Review</h3>
         <button className='inline-block p-2 rounded-lg border-transparent bg-gray-800 transform cursor-pointer hover:scale-105 hover:shadow-lg'
-          onClick={() => router.push(`/gameanalysis/${gameId}`)}>
+          onClick={() => router.push(`/gamereview/${gameId}`)}>
           <Chessboard
             position={game?.fen}
             boardWidth={320}

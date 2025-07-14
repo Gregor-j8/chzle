@@ -22,6 +22,7 @@ model User {
   password   String?
   rating     Int       @default(1200)
   createdAt  DateTime  @default(now())
+  ChessUsername String? @unique
   postId     String[]
   post       Post[]    
   userPuzzles userPuzzle[] 

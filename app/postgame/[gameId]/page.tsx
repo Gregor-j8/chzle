@@ -48,7 +48,7 @@ export default function PostGame() {
         <h3 className="text-lg font-semibold mb-2">Game Review</h3>
         <button className='inline-block p-2 rounded-lg border-transparent bg-gray-800 transform transition  
             cursor-pointer hover:scale-105 hover:shadow-lg'
-            onClick={() => {router.push(`/gameanalysis/${game.id}`)}}>
+            onClick={() => {router.push(`/gamereview/${game.id}`)}}>
             <Chessboard
             position={game.fen}
             boardWidth={320}

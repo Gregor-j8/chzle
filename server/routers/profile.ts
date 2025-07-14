@@ -58,6 +58,7 @@ getUserProfileByUsername: publicProcedure
       lastName: user.lastName,
       imageUrl: user.imageUrl,
       rating: userdata?.rating,
+      ChessUsername: userdata?.ChessUsername,
     };
   }),
 
@@ -159,5 +160,52 @@ getUserPosts: publicProcedure
     skip: input.skip ?? 0,
     take: input.take ?? 3,
   })
-})
+}),
+
+  getUserFromChess: protectedProcedure
+  .query(async ({ ctx }) => {
+    const { userId } = await auth()
+    console.log(userId)
+    if (!userId) {
+      throw new Error("User not authenticated")
+    }
+    
+    const user = await ctx.prisma.user.findFirst({
+      where: { id: userId },
+    })
+
+    if (!user) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
+    }
+    const chessUser = await fetch(`https://api.chess.com/pub/player/${user?.ChessUsername}/stats`,)
+    const chessData = await chessUser.json()
+
+    if (!chessData) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'Chess user not found' })
+    }
+
+    return chessData
+  }),
+  updateChessUsername: protectedProcedure
+  .input(z.object({ ChessUsername: z.string() }))
+  .mutation(async ({ ctx, input }) => {
+    const { userId } = await auth()
+
+    if (!userId) {
+      throw new Error("User not authenticated")
+    }
+
+    const user = await ctx.prisma.user.findFirst({
+      where: { clerk_id: userId },
+    })
+
+    if (!user) {
+      throw new TRPCError({ code: 'NOT_FOUND', message: 'User not found' })
+    }
+
+    return ctx.prisma.user.update({
+      where: { id: user.id },
+      data: { ChessUsername: input.ChessUsername },
+    })
+  })
 })

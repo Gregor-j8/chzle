@@ -11,11 +11,16 @@ import Link from 'next/link'
 import FollowBtn from './FollowBtn'
 import Follower from '@/app/_components/Followers'
 import Following from '@/app/_components/Following'
+import ChessAccount from './ChessAccount'
+import ChessLoginPage from './ChessLogin'
+import ChessAccountPage from './ChessAccount'
 
 export default function ProfilePage() {
   const { profile } = useParams();
   const [Modal, setModal] = useState(false)
   const [modalId, setModalId] = useState({})
+  const [ChessLogin, setChessLogin] = useState(false)
+  const [ChessAccount, setChessAccount] = useState(false)
 
   const { data: user, isLoading } = trpc.profile.getUserProfileByUsername.useQuery({
     username: profile?.toString() || '',
@@ -30,9 +35,14 @@ export default function ProfilePage() {
     <div className="bg-gray-800 shadow-lg rounded-lg p-6 w-full max-w-md text-center mb-4">
       <h1 className="text-3xl font-bold">{user.username}</h1>
       <p className="text-lg text-gray-400">Rating: {user.rating}</p>
-      <FollowBtn userId={user.id}/>
+      {user.ChessUsername ? (
+        <button onClick={() => {setChessAccount(true)}}>{user.ChessUsername}</button>
+      ) : (
+        <button onClick={() => {setChessLogin(true)}}>Connect To Chess.com</button>
+      )}
       <div className='flex justify-around'>
         <Follower userId={user.id}/>
+        <FollowBtn userId={user.id}/>
         <Following userId={user.id}/>
       </div> 
       <Link href="/" className="text-blue-400 hover:underline">Back to Home</Link>
@@ -57,6 +67,13 @@ export default function ProfilePage() {
       </div>
     )}
   </main>
-</div>
+    {ChessLogin && (
+      <ChessLoginPage onClose={() => setChessLogin(false)} user={user} />
+    )}
+
+  {ChessAccount && (
+    <ChessAccountPage onClose={() => setChessAccount(false)} user={user} />
+  )}
+  </div>
   )
 }
