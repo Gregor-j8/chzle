@@ -52,7 +52,6 @@ export const gameRouter = router({
 getEvaluation: publicProcedure
   .input(z.object({ fen: z.string().optional(), gameId: z.string().optional() }))
   .query(async ({ input }) => {
-    console.log("getEvaluation called", input)
     const { fen, gameId } = input
     const cacheKey = gameId ? `eval:${gameId}:${fen}` : `eval:${fen}`
     const cached = await redis.get(cacheKey)
@@ -68,7 +67,6 @@ getEvaluation: publicProcedure
           fen: fen,
         }),
       })
-      console.log("Response status:", response.status)
 
       const evalData = await response.json()
       if (evalData.error) {

@@ -4,7 +4,7 @@ import { HandThumbUpIcon, HandThumbUpIcon as HandThumbUpOutlineIcon } from '@her
 import { MessageCircle, Trash2, Pencil } from "lucide-react"
 import { trpc } from '@/utils/trpc'
 import { useParams, useRouter } from 'next/navigation'
-import { LoadingSpinner } from '../_components/loading'
+import { LoadingSpinner } from '../../_components/loading'
 import { useState } from "react"
 import { useUser } from "@clerk/clerk-react"
 import toast from "react-hot-toast"

@@ -45,7 +45,7 @@ export default function Posts({ searchText }: { searchText: string }) {
       {posts.map(post => (
         <div key={post.id}
           className="mb-6 rounded-2xl border border-slate-700 bg-slate-800 p-5 shadow-md transition-all duration-300 hover:shadow-lg hover:border-slate-500">
-          <Link href={`/${post.id}`} className="text-xl sm:text-2xl font-semibold text-white hover:underline">
+          <Link href={`/post/${post.id}`} className="text-xl sm:text-2xl font-semibold text-white hover:underline">
             {post.header}
           </Link>
           <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed">{post.description}</p>

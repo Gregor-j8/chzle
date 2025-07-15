@@ -23,15 +23,12 @@ export default function UsePuzzle(): PuzzleData {
 
   useEffect(() => {
     const fetchPuzzle = async () => {
-      console.log(data)
       if (!data && !data?.alreadyCompleted) return
         const pgn = data?.game.pgn
         setPuzzleId(data?.puzzle.id)
         setRating(data?.puzzle.rating)
         setSolutionMoves(data?.puzzle.solution)
         const initialPly = data?.puzzle.initialPly
-        console.log("pgn", pgn)
-        console.log("initialPly", initialPly)
         if (!pgn || !initialPly) {
           throw new Error('Invalid puzzle data')
         }
