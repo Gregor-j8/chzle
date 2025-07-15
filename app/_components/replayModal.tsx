@@ -64,7 +64,7 @@ export default function ReplayModal({ puzzle }: { puzzle: Puzzle }) {
       setFen(getFenAtStep(newStep))
     }
   }
-  return (
+return (
 <div className="flex w-full flex-col items-center gap-6 p-4">
   <div className="rounded-lg border border-slate-700 shadow-lg">
     <Chessboard position={fen} boardWidth={350} />

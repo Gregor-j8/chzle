@@ -26,7 +26,7 @@ export default function VsComputerModal({ setAiLevel, setPlayerColor }: VsComput
       <label htmlFor="difficulty-slider" className="block mb-2 text-white">
         Difficulty: <span className="font-bold text-blue-400">{difficulty}</span>
       </label>
-      <input id="difficulty-slider" type="range" min={1} max={16} value={difficulty}
+      <input id="difficulty-slider" type="range" min={1} max={15} value={difficulty}
         onChange={(e) => setDifficulty(Number(e.target.value))} className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer"/>
     </div>
       <div className="mb-6">
