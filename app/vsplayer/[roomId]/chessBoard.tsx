@@ -20,7 +20,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
   const [hasRefreshed, setHasRefreshed] = useState(false)
 
   useEffect(() => {
-    const handleResize = () => {setWidth(Math.min(window.innerWidth - 40, 560))}
+    const handleResize = () => {setWidth(Math.min(window.innerWidth - 40, 460))}
     handleResize()
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
@@ -195,7 +195,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
       toast.success('Match history updated!')
       setTimeout(()=> {
         router.push(`/postgame/${data.gameId}`)    
-      }, 500)
+      }, 2000)
     } else {
         toast.error("Failed to get postgame ID from server")
     }
@@ -252,7 +252,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
 
   return (
     <div>
-      <div className="flex flex-col my-[-150px] items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
+      <div className="flex flex-col my-[-250px] items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
         <p>You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
