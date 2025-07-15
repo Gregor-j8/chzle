@@ -53,13 +53,6 @@ export default function NewPost() {
           <textarea className="description bg-gray-700 p-3 h-48 border border-gray-600 rounded-md outline-none resize-none placeholder-gray-400 mb-4"
           placeholder="Describe your post here" value={Post.description} onChange={(e) => setPost({ ...Post, description: e.target.value })}
           />
-
-          <select className="bg-gray-700 border border-gray-600 rounded-md p-3 text-white mb-6 outline-none"
-            value={Post.game} onChange={(e) => setPost({ ...Post, game: e.target.value })}>
-            <option disabled value="">
-              Choose Game
-            </option>
-          </select>
           <div className="flex justify-end">
             <Link href="/" className="border border-gray-500 p-2 px-4 rounded-md font-semibold text-gray-300 hover:bg-gray-700">
               Cancel
