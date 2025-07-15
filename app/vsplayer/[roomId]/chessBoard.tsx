@@ -256,8 +256,10 @@ export default function ChessGame({ roomId }: { roomId: string }) {
         <p>You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
-      <Chessboard position={game.fen()} onPieceDrop={onDrop} arePiecesDraggable={true}
+      <div className="flex justify-center mt-6">
+        <Chessboard position={game.fen()} onPieceDrop={onDrop} arePiecesDraggable={true}
         arePremovesAllowed={true} boardWidth={width} boardOrientation={playerColor === 'black' ? 'black' : 'white'}/>
+      </div>
     </div>
   )
 }

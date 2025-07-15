@@ -6,15 +6,22 @@ import { supabase } from '@/utils/supabaseClient'
 import toast from 'react-hot-toast'
 import { trpc } from '@/utils/trpc'
 import { Chessboard } from 'react-chessboard'
+import { useEffect, useState } from 'react'
 
 export default function PostGame() {
   const roomId = useParams()
-  console.log(roomId)
   const router = useRouter()
+  const [CurrentMathId, setCurrentMathId] = useState('')
   const { user } = useUser()
   const { data: game, isLoading: gameLoading } = trpc.game.findGameDetails.useQuery(
-    { id: roomId.gameId?.toString() as string },
-    { enabled: !!roomId })
+    { id: CurrentMathId },
+    { enabled: !!CurrentMathId })
+
+    useEffect(() => {
+      if (roomId.gameId) {
+        setCurrentMathId(roomId.gameId.toString())
+      }
+    }, [roomId])
 
   const handleRematch = async () => {
     if (!user || !game) return
