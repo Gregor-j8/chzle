@@ -20,7 +20,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
   const [hasRefreshed, setHasRefreshed] = useState(false)
 
   useEffect(() => {
-    const handleResize = () => {setWidth(Math.min(window.innerWidth - 40, 460))}
+    const handleResize = () => {setWidth(Math.min(window.innerWidth - 40, 530))}
     handleResize()
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
@@ -252,7 +252,7 @@ export default function ChessGame({ roomId }: { roomId: string }) {
 
   return (
     <div>
-      <div className="flex flex-col items-center gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
+      <div className="flex flex-col items-center justify-center mt-10 gap-4 bg-gray-900 p-6 rounded-xl shadow-lg max-w-md mx-auto text-white">
         <p>You are playing as {playerColor}</p>
         <p>Turn: {game.turn() === 'w' ? 'White' : 'Black'}</p>
       </div>
