@@ -191,11 +191,13 @@ export default function ChessGame({ roomId }: { roomId: string }) {
     if (error) {
       toast.error('Failed to update match history.')
       return null 
-    } else {
+    } else if (data?.gameId) {
       toast.success('Match history updated!')
       setTimeout(()=> {
         router.push(`/postgame/${data.gameId}`)    
       }, 500)
+    } else {
+        toast.error("Failed to get postgame ID from server")
     }
   }
 
