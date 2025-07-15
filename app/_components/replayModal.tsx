@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from 'react'
 import { Chessboard } from 'react-chessboard'
 import { Chess } from 'chess.js'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 
 interface Puzzle {
   fen?: string
   pgn?: string
   moves?: string
+  id?: string
 }
 
 export default function ReplayModal({ puzzle }: { puzzle: Puzzle }) {
@@ -14,8 +17,10 @@ export default function ReplayModal({ puzzle }: { puzzle: Puzzle }) {
   const [fen, setFen] = useState('')
   const [moves, setMoves] = useState<string[]>([])
   const [step, setStep] = useState(0)
+  const [isGame, setIsGame] = useState(false)
 
   useEffect(() => {
+    setIsGame(false)
     if (puzzle?.fen && !puzzle.pgn) {
       setFen(puzzle.fen)
     } else {
@@ -25,6 +30,7 @@ export default function ReplayModal({ puzzle }: { puzzle: Puzzle }) {
       setMoves(puzzle.moves.trim().split(' '))
     } else if (puzzle?.pgn) {
       setMoves(puzzle.pgn.trim().split(' '))
+      setIsGame(true)
     } else {
       setMoves([])
     }
@@ -58,7 +64,6 @@ export default function ReplayModal({ puzzle }: { puzzle: Puzzle }) {
       setFen(getFenAtStep(newStep))
     }
   }
-
   return (
 <div className="flex w-full flex-col items-center gap-6 p-4">
   <div className="rounded-lg border border-slate-700 shadow-lg">
@@ -70,13 +75,14 @@ export default function ReplayModal({ puzzle }: { puzzle: Puzzle }) {
       disabled={step === 0}
       className={`px-4 py-2 rounded-md text-white transition ${
         step === 0 ? 'bg-slate-600 cursor-not-allowed' : 'bg-slate-700 hover:bg-slate-600'
-      }`}>◀</button>
+      }`}><ArrowLeft/></button>
     <span className="text-sm font-medium text-slate-300">{step + 1} / {moves.length + 1}</span>
     <button onClick={handleForward} disabled={step === moves.length}
       className={`px-4 py-2 rounded-md text-white transition ${
-        step === moves.length ? 'bg-slate-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}>▶
+        step === moves.length ? 'bg-slate-600 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}><ArrowRight/>
     </button>
   </div>
+    {isGame && <Link href={`/gamereview/${puzzle?.id}`} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow"><button>Game Review</button></Link>}
 </div>
   )
 }

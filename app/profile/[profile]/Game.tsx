@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { Chessboard } from 'react-chessboard'
 import { trpc } from '@/utils/trpc'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 
 export default function GameSlideshow({ userId, onSelect}: { userId: string, onSelect: (game) => void}) {
   const [page, setPage] = useState(0)
@@ -33,7 +34,7 @@ export default function GameSlideshow({ userId, onSelect}: { userId: string, onS
       <div className="relative bg-gray-800 rounded-lg p-4 shadow-lg">
         <button onClick={handlePrev} disabled={page === 0}
           className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-2xl px-3 py-1 rounded-full ${
-            page === 0 ? 'text-gray-600 cursor-not-allowed' : 'text-white hover:bg-gray-700'}`}>←
+            page === 0 ? 'text-gray-600 cursor-not-allowed' : 'text-white hover:bg-gray-700'}`}><ArrowLeft/>
         </button>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 justify-items-center">
           {games.map((g) => (
@@ -44,7 +45,7 @@ export default function GameSlideshow({ userId, onSelect}: { userId: string, onS
         </div>
         <button onClick={handleNext} disabled={games.length < take}
          className={`absolute right-2 top-1/2 transform -translate-y-1/2 text-2xl px-3 py-1 rounded-full ${
-            games.length < take ? 'text-gray-600 cursor-not-allowed' : 'text-white hover:bg-gray-700'}`}>→</button>
+            games.length < take ? 'text-gray-600 cursor-not-allowed' : 'text-white hover:bg-gray-700'}`}><ArrowRight/></button>
       </div>
     </div>
   )
